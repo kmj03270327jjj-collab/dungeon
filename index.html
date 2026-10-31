@@ -330,6 +330,11 @@ button.item{cursor:pointer}
 .potc.on .pcnt{background:var(--gold);color:#2a1a05}
 .pdec{position:absolute;top:-6px;left:-6px;width:24px;height:24px;border-radius:50%;border:2px solid var(--frame);background:var(--btn);color:var(--btnInk);font:inherit;font-size:14px;cursor:pointer;padding:0}
 .lvbtns{display:flex;gap:8px;margin-top:10px}.lvbtns .buy{flex:1;justify-content:center}.lvbtns .lvgo{flex:1.4;font-size:18px}
+.rtab{background:var(--bg);border:3px solid var(--frame);border-radius:10px;padding:6px 10px}
+.rh,.rr{display:grid;grid-template-columns:1fr 1.2fr 1.2fr;align-items:center;gap:6px;text-align:center}
+.rh{font-size:12px;color:var(--muted);padding-bottom:4px;border-bottom:1px solid var(--ring)}
+.rr{padding-top:8px;font-size:16px}.rr small{display:block;font-size:11px;color:var(--muted)}
+.rn{font-size:12px;color:var(--muted);text-align:center;padding:2px 0 6px;border-bottom:1px solid var(--ring)}
 .pb textarea{width:100%;height:84px;font:12px/1.35 ui-monospace,Menlo,Consolas,monospace;background:var(--bg);color:var(--ink);border:2px solid var(--frame);border-radius:6px;padding:8px;resize:none;user-select:text;-webkit-user-select:text;touch-action:auto;word-break:break-all}
 .go.sub2{background:var(--btn);border-color:var(--btnEdge);font-size:19px;margin-top:8px}
 .hgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:6px}
@@ -1818,18 +1823,21 @@ const inPool=id=>!!S.heroes[id]||!STORY_LOCK[id]||!!S.story[STORY_LOCK[id]];
 const ACC_G={c1:'c',c2:'c',c4:'r',c3:'e'},ACC_P=.25,DUST={c:10,r:20,e:40,l:80};
 function rollGrade(){const r=Math.random();return r<GRADES.l.rate?'l':r<GRADES.l.rate+GRADES.e.rate?'e':r<GRADES.l.rate+GRADES.e.rate+GRADES.r.rate?'r':'c';}
 const EPULL1=15,EPULL10=135;
+const HERO_RATE={c:.035,r:.018,e:.006,l:.001},FRAG_RATE={c:.45,r:.30,e:.18,l:.07},FRAG_N={c:5,r:4,e:3,l:2},DUP_N={c:10,r:15,e:25,l:40};
 function pullOne(kind){
   if(kind==='eq'){const order=['l','e','r','c'];let gi=order.indexOf(rollGrade()),pool=[];
     while(gi<order.length){pool=Object.keys(ACC_G).filter(k=>ACC_G[k]===order[gi]);if(pool.length)break;gi++;}
     const g=order[gi],aid=pool[Math.floor(Math.random()*pool.length)];
     if(!S.owned.includes(aid)){S.owned.push(aid);return{acc:aid,g,isNew:true};}
     S.afrag[aid]=(S.afrag[aid]||0)+1;return{acc:aid,g,afrag:1};}
-  let r=Math.random(),g='c';
-  if(r<GRADES.l.rate)g='l';else if(r<GRADES.l.rate+GRADES.e.rate)g='e';else if(r<GRADES.l.rate+GRADES.e.rate+GRADES.r.rate)g='r';
-  const order=['l','e','r','c'];let gi=order.indexOf(g),pool=[];while(gi<order.length){pool=HERO_IDS.filter(id=>CLASSES[id].grade===order[gi]&&inPool(id));if(pool.length)break;gi++;}
-  g=order[gi];const id=pool[Math.floor(Math.random()*pool.length)];
-  if(!S.heroes[id]&&Math.random()<NEW_P){unlockHero(id);return{id,g,isNew:true};}
-  const n=GRADES[g].frag;if(S.heroes[id])S.heroes[id].frag=(S.heroes[id].frag||0)+n;else{S.frags[id]=(S.frags[id]||0)+n;}
+  const hTot=HERO_RATE.c+HERO_RATE.r+HERO_RATE.e+HERO_RATE.l;let r=Math.random();
+  const pickG=(R,x)=>{let a=0;for(const k of ['l','e','r','c']){a+=R[k];if(x<a)return k;}return 'c';};
+  const pickH=g=>{const order=['l','e','r','c'];let gi=order.indexOf(g),pool=[];while(gi<order.length){pool=HERO_IDS.filter(id=>CLASSES[id].grade===order[gi]&&inPool(id));if(pool.length)break;gi++;}
+    return [pool[Math.floor(Math.random()*pool.length)],order[gi]];};
+  if(r<hTot){const [id,g]=pickH(pickG(HERO_RATE,r));if(!S.heroes[id]){unlockHero(id);return{id,g,isNew:true};}
+    const n=DUP_N[g];S.heroes[id].frag=(S.heroes[id].frag||0)+n;return{id,g,frag:n,dup:true};}
+  const [id,g]=pickH(pickG(FRAG_RATE,Math.random()));const n=FRAG_N[g];
+  if(S.heroes[id])S.heroes[id].frag=(S.heroes[id].frag||0)+n;else S.frags[id]=(S.frags[id]||0)+n;
   return{id,g,frag:n};}
 const swatch=it=>`<span class="sw" style="background:${it.col||it.blade||it.b}"></span>`;
 const PANELS={
@@ -1941,11 +1949,12 @@ const PANELS={
       <div class="opts"><button class="opt" data-act="pull" data-id="e1">1회 소환<small>보석 ${EPULL1}</small></button><button class="opt" data-act="pull" data-id="e10">10회 소환<small>보석 ${EPULL10}</small></button></div>${res}
       <h3>등급별 확률</h3><div class="list">`+['l','e','r','c'].map(g=>{const ks=Object.keys(ACC_G).filter(k=>ACC_G[k]===g);
         return `<div class="item"><span class="grade g-${g}">${GRADES[g].name}</span><span class="tx"><b>${Math.round(GRADES[g].rate*100)}%</b><small>${ks.length?ks.map(k=>ITEMS[k].name).join(', '):'아직 없음 (아래 등급으로 대체)'}, 중복 시 장비 조각 1개</small></span></div>`;}).join('')+`</div>`;
-    return wl+tabs+`<p class="hint" style="text-align:left">대부분 영웅의 영혼조각이 나오고, 낮은 확률로 아직 없는 영웅이 직접 나와요. 영혼조각으로 영웅의 별을 올리고, 없는 영웅의 조각을 ${UNLOCK_FRAG}개 모으면 해방할 수 있어요.</p>
+    return wl+tabs+`<p class="hint" style="text-align:left">대부분은 영혼조각이 나와요. 높은 등급 영웅의 조각도 꽤 자주 나오고, 영웅 자체는 낮은 확률로 나와요. 이미 있는 영웅이 나오면 조각 묶음으로 바뀌어요. 없는 영웅의 조각을 ${UNLOCK_FRAG}개 모으면 해방할 수 있어요.</p>
       <div class="opts"><button class="opt" data-act="pull" data-id="h1">1회 소환<small>${(S.box||0)>0?'영혼 상자 1개':'보석 '+PULL1}</small></button>
       <button class="opt" data-act="pull" data-id="h10">10회 소환<small>보석 ${PULL10}</small></button></div>${res}
-      <h3>등급별 확률</h3><div class="list">`+Object.entries(GRADES).map(([g,G])=>{const hs=HERO_IDS.filter(id=>CLASSES[id].grade===g);
-        return `<div class="item"><span class="grade g-${g}">${G.name}</span><span class="tx"><b>${Math.round(G.rate*100)}%</b><small>${hs.length?hs.map(id=>CLASSES[id].name+(inPool(id)?'':` (스토리 ${STORY_LOCK[id]} 클리어 후)`)).join(', '):'아직 영웅 없음 (아래 등급으로 대체)'}, 영혼조각 ${G.frag}개</small></span></div>`;}).join('')+`</div>`;}],
+      <h3>확률표</h3><div class="rtab"><div class="rh"><span>등급</span><span>영웅</span><span>영혼조각</span></div>`+['l','e','r','c'].map(g=>{const hs=HERO_IDS.filter(id=>CLASSES[id].grade===g);
+        return `<div class="rr"><span><span class="grade g-${g}">${GRADES[g].name}</span></span><span>${(HERO_RATE[g]*100).toFixed(1)}%<small>중복 시 조각 ${DUP_N[g]}</small></span><span>${Math.round(FRAG_RATE[g]*100)}%<small>${FRAG_N[g]}개씩</small></span></div>
+          <div class="rn">${hs.length?hs.map(id=>CLASSES[id].name+(inPool(id)?'':` (스토리 ${STORY_LOCK[id]} 클리어 후)`)).join(', '):'아직 영웅 없음, 아래 등급으로 대체'}</div>`;}).join('')+`</div>`;}],
   party:['파티',()=>{
     const slots=[0,1,2].map(i=>{const id=S.party[i];if(!id)return `<div class="pslot empty"><small>빈 자리</small></div>`;const H=S.heroes[id];
       return `<div class="pslot"><canvas data-hero="${id}" width="10" height="12"></canvas><b>${CLASSES[id].name}</b><small>Lv${H.lv}${i===0?', 먼저 출전':''}</small></div>`;}).join('');
@@ -2083,7 +2092,7 @@ $('heroCv').addEventListener('click',()=>{heroSel=S.party[0];heroTab='lv';openSh
 let gState=null;
 const GCOL={c:'170,178,192',r:'95,168,232',e:'190,120,245',l:'250,200,80'},GRANK={c:0,r:1,e:2,l:3},GHEX={c:'#aab2c0',r:'#5fa8e8',e:'#be78f5',l:'#fac850'};
 function gachaPlay(list){const best=list.reduce((a,x)=>GRANK[x.g]>GRANK[a]?x.g:a,'c');
-  const specials=list.filter(x=>(x.isNew&&(!x.acc||GRANK[x.g]>=1))||(!x.acc&&GRANK[x.g]>=2));
+  const specials=list.filter(x=>(x.isNew&&(!x.acc||GRANK[x.g]>=1))||x.dup);
   gState={list,best,specials,sp:0,phase:'charge',t:0,parts:[],last:0};
   const g=$('gacha');g.classList.remove('hide');g.style.setProperty('--gc',GHEX[best]);$('gCards').innerHTML='';$('gCards').classList.remove('fast');$('gReveal').classList.add('hide');
   $('gHint').textContent='화면을 누르면 넘어가요';const c=$('gcv');c.width=c.offsetWidth;c.height=c.offsetHeight;
@@ -2094,7 +2103,7 @@ function gShowReveal(){const x=gState.specials[gState.sp],col=GHEX[x.g],R=$('gRe
   else g.drawImage(pSpr(x.id,(S.heroes[x.id]||{skin:DEF_SKIN[x.id]}).skin).n,1,1);
   const tag=R.querySelector('.gtag');tag.textContent=GRADES[x.g].name;tag.style.background=col;
   R.querySelector('.gname').textContent=x.acc?ITEMS[x.acc].name:CLASSES[x.id].name;
-  R.querySelector('.gsub').textContent=x.acc?(x.isNew?'새 장신구!':`장비 조각 ×${x.afrag||1}`):(x.isNew?'새 영웅이 동료가 되었어요!':`영혼조각 ×${x.frag}`);
+  R.querySelector('.gsub').textContent=x.acc?(x.isNew?'새 장신구!':`장비 조각 ×${x.afrag||1}`):(x.isNew?'새 영웅이 동료가 되었어요!':x.dup?`이미 있는 영웅이라 영혼조각 ×${x.frag}`:`영혼조각 ×${x.frag}`);
   gState.phase='reveal';gState.t=0;sfx('up');}
 function gShowCards(){$('gReveal').classList.add('hide');const L=gState.list,box=$('gCards');box.style.gridTemplateColumns=`repeat(${Math.min(5,L.length)},minmax(0,92px))`;
   box.innerHTML=L.map((x,i)=>`<div class="gcard ${x.isNew?'new':''}" style="--gc:${GHEX[x.g]};animation-delay:${i*.12}s">${x.acc?`<span class="sw" style="background:${ITEMS[x.acc].col};width:24px;height:24px;margin:12px 0"></span>`:`<canvas width="10" height="12" data-g="${x.id}"></canvas>`}
