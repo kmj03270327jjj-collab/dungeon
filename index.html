@@ -341,6 +341,14 @@ button.item{cursor:pointer}
 .attc.big{grid-column:span 2;background:linear-gradient(var(--bg),rgba(242,193,78,.18))}
 .attc.got{opacity:.5}.attc.cur{border-color:var(--gold);box-shadow:0 0 0 2px var(--gold) inset}.attc.next{border-style:dashed}
 .attc em{position:absolute;top:-6px;right:-6px;font-style:normal;background:#3aa34a;color:#fff;border-radius:50%;width:18px;height:18px;font-size:11px;display:flex;align-items:center;justify-content:center}
+.rushl{display:grid;grid-template-columns:repeat(5,1fr);gap:6px}
+.rushc,.passc{position:relative;background:var(--panel);border:2px solid var(--frame);border-radius:8px;padding:6px 2px;display:flex;flex-direction:column;align-items:center;gap:3px;text-align:center}
+.rushc b,.passc b{font-weight:normal;font-size:14px}.rushc small{font-size:11px;color:var(--muted);word-break:keep-all;line-height:1.2}
+.rushc .ari,.passc .ari{display:flex;flex-direction:column;align-items:center;gap:2px}
+.rushc.got,.passc.got{opacity:.5}.passc.reach{border-color:var(--gold);box-shadow:0 0 0 2px var(--gold) inset}
+.rushc em,.passc em{position:absolute;top:-6px;right:-6px;font-style:normal;background:#3aa34a;color:#fff;border-radius:50%;width:16px;height:16px;font-size:10px;display:flex;align-items:center;justify-content:center}
+.passl{display:grid;grid-template-columns:repeat(5,1fr);gap:6px}
+.passc.big{background:linear-gradient(var(--panel),rgba(242,193,78,.25))}
 .pb textarea{width:100%;height:84px;font:12px/1.35 ui-monospace,Menlo,Consolas,monospace;background:var(--bg);color:var(--ink);border:2px solid var(--frame);border-radius:6px;padding:8px;resize:none;user-select:text;-webkit-user-select:text;touch-action:auto;word-break:break-all}
 .go.sub2{background:var(--btn);border-color:var(--btnEdge);font-size:19px;margin-top:8px}
 .hgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:6px}
@@ -428,7 +436,7 @@ button.item{cursor:pointer}
         <button class="sq" id="sumB"><span class="ic">🔮</span>소환</button>
         <button class="sq" id="missionB"><span class="ic">📜</span>미션<span class="dot hide" id="mDot"></span></button>
       </div>
-      <div class="side left"><button class="sq" id="clsB"><span class="ic">⚔️</span>영웅</button><button class="sq" id="attB"><span class="ic">📅</span>출석<span class="dot hide" id="aDot"></span></button></div>
+      <div class="side left"><button class="sq" id="clsB"><span class="ic">⚔️</span>영웅</button><button class="sq" id="attB"><span class="ic">📅</span>출석<span class="dot hide" id="aDot"></span></button><button class="sq" id="passB"><span class="ic">🎫</span>패스<span class="dot hide" id="pDot"></span></button></div>
     </div>
     <div class="lbot">
       <button id="startB">시작<small id="startSub"></small></button>
@@ -458,8 +466,8 @@ const GEM='<svg viewBox="0 0 8 8" shape-rendering="crispEdges"><path fill="#4fb8
 const ITEMS={
   w0:{slot:'w',cls:'war',tier:1,name:'녹슨 검',desc:'기본 베기',atk:0,blade:'#b8a48c'},
   w1:{slot:'w',cls:'war',tier:2,name:'흡혈검',desc:'벨 때 10% 확률로 체력 회복',atk:3,vamp:1,up:'+2, +4에서 회복량 증가',price:[300,'g'],blade:'#e05a6a'},
-  w2:{slot:'w',cls:'war',tier:3,name:'기사의 대검',desc:'느리지만 넓고 묵직한 반원 베기',atk:9,wide:1,len:2,price:[900,'g'],blade:'#f4f7fb'},
-  w3:{slot:'w',cls:'war',tier:4,name:'룬 블레이드',desc:'세 번째 베기마다 관통 검기 (계수 80%), 치명타 피해 +30%',atk:8,rune:1,cdmg:.3,up:'+3부터 두 번째 베기마다 검기',price:[30,'j'],blade:'#7fd8ff'},
+  w2:{slot:'w',cls:'war',tier:3,name:'기사의 대검',desc:'느리지만 넓고 묵직한 반원 베기',atk:6,wide:1,len:2,price:[900,'g'],blade:'#f4f7fb'},
+  w3:{slot:'w',cls:'war',tier:4,name:'룬 블레이드',desc:'세 번째 베기마다 관통 검기 (계수 80%), 치명타 피해 +30%',atk:6,rune:1,cdmg:.3,up:'+3부터 두 번째 베기마다 검기',price:[30,'j'],blade:'#7fd8ff'},
   b0:{slot:'w',cls:'arc',tier:1,name:'사냥꾼 활',desc:'기본 화살',atk:0,blade:'#c9b28a'},
   b1:{slot:'w',cls:'arc',tier:2,name:'장궁',desc:'멀리 날아갈수록 피해 증가 (최대 계수 200%)',atk:3,life:.95,aim:40,far:1,price:[300,'g'],blade:'#e8d8b0'},
   b2:{slot:'w',cls:'arc',tier:3,name:'연발 석궁',desc:'아주 빠른 연사, 한 발은 약함',atk:-2,cd:.24,price:[800,'g'],blade:'#9fb2c8'},
@@ -589,10 +597,10 @@ const STORY=[
 const xpNeed=lv=>Math.round(30*Math.pow(lv,1.35)+40);
 const MAXLV=5,CRIT_BASE=.05,CRIT_CAP=.7,CDMG_BASE=1.5;
 const SKILLS={
-  w0:{name:'회전 베기',desc:'주변 360도 베기',coef:1.2,pen:6,cd:6,cost:[300,'g']},
-  w1:{name:'피의 일격',aim:'dir',desc:'앞으로 강한 한 방, 준 피해의 30% 회복',coef:2.2,pen:8,cd:10,cost:[600,'g']},
-  w2:{name:'대지 가르기',aim:'dir',desc:'앞으로 일직선 충격파, 맞은 적 기절',coef:2,pen:15,cd:10,cost:[1500,'g'],req:{k:'kKnight',n:5,txt:'갑옷 기사 5마리 처치'}},
-  w3:{name:'룬 폭풍',desc:'3초간 몸 주위를 도는 검기 3개',coef:.7,pen:10,cd:14,cost:[20,'j'],req:{k:'best',n:10,txt:'10층 도달'}},
+  w0:{name:'회전 베기',desc:'주변 360도 베기',coef:1,pen:6,cd:7,cost:[300,'g']},
+  w1:{name:'피의 일격',aim:'dir',desc:'앞으로 강한 한 방, 준 피해의 20% 회복',coef:1.8,pen:8,cd:11,cost:[600,'g']},
+  w2:{name:'대지 가르기',aim:'dir',desc:'앞으로 일직선 충격파, 맞은 적 기절',coef:1.6,pen:15,cd:12,cost:[1500,'g'],req:{k:'kKnight',n:5,txt:'갑옷 기사 5마리 처치'}},
+  w3:{name:'룬 폭풍',desc:'3초간 몸 주위를 도는 검기 3개',coef:.55,pen:10,cd:15,cost:[20,'j'],req:{k:'best',n:10,txt:'10층 도달'}},
   b0:{name:'연사',aim:'dir',desc:'순식간에 화살 5발',coef:.8,pen:3,cd:6,cost:[300,'g']},
   b1:{name:'저격',aim:'dir',desc:'잠깐 조준 후 관통하는 강한 한 발',coef:3,pen:12,cd:8,cost:[600,'g']},
   b2:{name:'화살비',aim:'pt',desc:'적이 몰린 곳에 화살 12발',coef:.6,pen:4,cd:11,cost:[1500,'g'],req:{k:'kSkel',n:30,txt:'해골 궁수 30마리 처치'}},
@@ -655,6 +663,8 @@ const MISSIONS=[
   {id:'m12',name:'무기 하나를 +5까지 강화',goal:5,v:()=>Math.max(0,...Object.values(S.lv||{})),rew:[15,'j']},
   {id:'p22',name:'장신구 4개 모으기',goal:4,v:()=>S.owned.filter(a=>a!=='c0').length,rew:[3,'ebox']},
   {id:'p23',name:'장신구 하나를 +5까지 재련',goal:5,v:()=>Math.max(0,...Object.values(S.rlv||{})),rew:[20,'j']},
+  {id:'p24',name:'던전 돌파 어려움 5층 도달',goal:5,v:s=>s.bestHard||0,rew:[30,'j']},
+  {id:'p25',name:'던전 돌파 어려움 15층 도달',goal:15,v:s=>s.bestHard||0,rew:[60,'j']},
 ];
 const MAPS=[
   {name:'지하 감옥',desc:'횃불이 밝히는 돌 감옥',unlock:0,gold:1,light:'255,160,70',style:'torch',crackP:.14,
@@ -669,10 +679,10 @@ const MAPS=[
 ];
 
 const CLASSES={
-  war:{name:'전사',unlock:'처음부터 함께해요',grade:'c',six:'불굴: 한 탐험에 한 번, 쓰러질 때 체력 30%로 다시 일어남',hpBase:84,desc:'가까이서 베기, 튼튼함',style:'근접 베기',hp:20,spd:0,aim:56,base:10,spread:5},
+  war:{name:'전사',unlock:'처음부터 함께해요',grade:'c',six:'불굴: 한 탐험에 한 번, 쓰러질 때 체력 30%로 다시 일어남',hpBase:76,desc:'가까이서 베기, 튼튼함',style:'근접 베기',hp:20,spd:0,aim:56,base:9,spread:4},
   arc:{name:'궁수',unlock:'스토리 1-6 클리어 또는 영혼 소환',grade:'r',six:'연속 사격: 일반 공격 화살이 1발 더 나감',hpBase:60,desc:'멀리서 화살, 빠름',style:'화살',hp:-15,spd:.12,aim:125,base:7,spread:4},
   mag:{name:'마법사',unlock:'스토리 1-12 클리어 또는 영혼 소환',grade:'r',six:'마력 폭주: 스킬 쿨타임 25% 감소',hpBase:52,desc:'폭발 화염구, 약한 몸',style:'화염구 폭발',hp:-25,spd:0,aim:115,base:12,spread:5},
-  rog:{name:'도적',unlock:'영웅 소환으로 얻어요',grade:'r',six:'그림자 습격: 빈틈이나 등 뒤를 치면 치명타율 +30% 추가',hpBase:56,desc:'빠른 단검, 뒤치기 치명타',style:'단검 연타',hp:-20,spd:.18,aim:40,base:6,spread:3},
+  rog:{name:'도적',unlock:'영웅 소환으로 얻어요',grade:'r',six:'그림자 습격: 빈틈이나 등 뒤를 치면 치명타율 +30% 추가',hpBase:60,desc:'빠른 단검, 뒤치기 치명타',style:'단검 연타',hp:-20,spd:.18,aim:64,base:7,spread:3},
   sum:{name:'소환사',unlock:'영웅 소환으로 얻어요',grade:'e',six:'정령 군단: 소환수가 1마리 더',hpBase:50,desc:'소환수가 대신 싸움, 약한 몸',style:'정령 소환',hp:-25,spd:0,aim:110,base:5,spread:3},
 };
 /* ---------- 저장 ---------- */
@@ -685,7 +695,7 @@ const defSave=()=>({gold:0,gems:0,owned:['c0'],heroes:{war:{lv:1,xp:0,skin:'w0',
 let S=defSave();
 function norm(o){const d=defSave();
   const r={...d,...o,st:{...d.st,...(o.st||{})},heroes:{...d.heroes,...(o.heroes||{})},pot:{...d.pot,...(o.pot||{})},lv:{...(o.lv||{})},elv:{...(o.elv||{})},
-    sel:{...d.sel,...(o.sel||{}),diff:0},t:o.t||0,owned:[...new Set([...d.owned,...(o.owned||[])])],skins:[...new Set([...d.skins,...(o.skins||[])])]};
+    sel:{...d.sel,...(o.sel||{})},t:o.t||0,owned:[...new Set([...d.owned,...(o.owned||[])])],skins:[...new Set([...d.skins,...(o.skins||[])])]};
   for(const k in r.heroes){const h=r.heroes[k];h.star=h.star||1;h.frag=h.frag||0;if(!h.rb)h.rb=k==='war'?{}:{kills:r.st.kills||0,kKnight:r.st.kKnight||0,kSkel:r.st.kSkel||0,kBat:r.st.kBat||0};}r.frags={...(o.frags||{})};r.box=o.box||0;r.ebox=o.ebox||0;r.att={n:0,last:'',...(o.att||{})};r.afrag={...(o.afrag||{})};r.rlv={...(o.rlv||{})};
   {const seen=new Set();for(const k of Object.keys(r.heroes)){const h=r.heroes[k];for(const sl of ['c','c2']){const a=h[sl]||'c0';if(a==='c0')continue;if(seen.has(a))h[sl]='c0';else seen.add(a);}}}
   r.party=(r.party||['war']).filter(id=>r.heroes[id]).slice(0,3);if(!r.party.length)r.party=['war'];r.cls=r.party[0];return r;}
@@ -694,7 +704,7 @@ const EQ=()=>lo(S.party[0]);
 try{const raw=localStorage.getItem(KEY);
   if(raw)S=norm(JSON.parse(raw));
 }catch(e){}
-S.sel.diff=0;
+const hardOpen=()=>(S.st.best||0)>=10;
 let shopTab=null,missionTab='d';
 const DAILY=[
   {id:'d1',name:'슬라임 30마리 처치',evt:'kSlime',goal:30,rew:[1,'box']},
@@ -734,7 +744,7 @@ function pickIds(pool,n,key){let h=hashStr(key);const ids=pool.map(m=>m.id),out=
 function ensurePeriods(){if(!S.per)S.per={};const dk=dayKey(),wk=weekKey();
   if(!S.per.d||S.per.d.key!==dk)S.per.d={key:dk,ids:pickIds(DAILY.filter(m=>!m.dun||dunOpen(0)),3,'d'+dk),prog:{},claimed:[],bonus:false};
   if(!S.per.w||S.per.w.key!==wk)S.per.w={key:wk,ids:pickIds(WEEKLY.filter(m=>!m.dun||dunOpen(0)),4,'w'+wk),prog:{},claimed:[]};}
-function inc(evt,n=1,mode){if(!evt)return;ensurePeriods();
+function inc(evt,n=1,mode){if(!evt)return;ensurePeriods();passInc(evt,n,mode);
   for(const pr of [S.per.d,S.per.w]){if(mode==='max')pr.prog[evt]=Math.max(pr.prog[evt]||0,n);else pr.prog[evt]=(pr.prog[evt]||0)+n;}}
 const pVal=(m,pr)=>m.val?m.val(pr):(pr.prog[m.evt]||0);
 function perList(k){ensurePeriods();const pr=S.per[k],pool=k==='d'?DAILY:WEEKLY;
@@ -794,6 +804,30 @@ function rewIcon(r){const ic=r[1]==='g'?COIN:r[1]==='j'?GEM:r[1]==='box'?'<span 
   return `<span class="ri">${ic}<span>${r[1]==='g'||r[1]==='j'||r[1]==='box'||r[1]==='ebox'?r[0]:POTS[r[1]].sh+r[0]}</span></span>`;}
 const ATT=[[[300,'g'],[1,'box']],[[2,'box']],[[30,'j']],[[2,'ebox']],[[1,'pm'],[1,'box']],[[3,'box']],[[50,'j'],[3,'ebox']]];
 const attCan=()=>!!S.att&&S.att.last!==dayKey();
+const RUSH_SEQ=[{type:'king',map:0},{type:'queen',map:1},{type:'king',map:0,emp:1},{type:'guardian',map:1}];
+const rushName=f=>{const B=RUSH_SEQ[(f-1)%RUSH_SEQ.length];return B.emp?'슬라임 황제':ETYPES[B.type].name;};
+function rushRw(f){return f===1?[[20,'j'],[2,'box']]:f===2?[[30,'j'],[2,'ebox']]:f===3?[[40,'j'],[3,'box']]:f===4?[[50,'j'],[3,'ebox']]:[[60+10*(f-5),'j'],[4,'box'],[2,'ebox']];}
+const RUSH_DAY=2,RUSH_TIME=240;
+const brLeft=()=>RUSH_DAY-(S.br&&S.br.key===dayKey()?S.br.used:0);
+const PASS=[[[2,'box']],[[30,'j']],[[1,'pm']],[[2,'ebox']],[[3,'box']],[[40,'j']],[[2,'pm']],[[3,'ebox']],[[4,'box']],[[50,'j']],
+  [[1,'pl']],[[4,'ebox']],[[5,'box']],[[60,'j']],[[2,'pl']],[[5,'ebox']],[[6,'box']],[[80,'j']],[[6,'ebox']],[[100,'j'],[10,'box']]];
+const kstDay=()=>Math.floor((Date.now()+9*3600e3)/864e5);
+const PMD=[{id:'pd1',name:'출석 보상 받기',evt:'attend',goal:1,pts:20},{id:'pd2',name:'적 100마리 처치',evt:'kills',goal:100,pts:30},
+  {id:'pd3',name:'스토리 스테이지 2개 클리어',evt:'stageClear',goal:2,pts:30},{id:'pd4',name:'스킬 20번 사용',evt:'skill',goal:20,pts:20}];
+const PMS=[{id:'ps1',name:'보스 러시 3번 도전',evt:'rush',goal:3,pts:100},{id:'ps2',name:'영웅 소환 30회',evt:'hpull',goal:30,pts:100},
+  {id:'ps3',name:'장비 소환 20회',evt:'epull',goal:20,pts:100},{id:'ps4',name:'스토리 스테이지 20개 클리어',evt:'stageClear',goal:20,pts:150},
+  {id:'ps5',name:'무기, 장비 강화 10번',evt:'upgrade',goal:10,pts:100},{id:'ps6',name:'적 2000마리 처치',evt:'kills',goal:2000,pts:150}];
+function ensurePass(){const se=Math.floor(kstDay()/14),dk=dayKey();
+  if(!S.pass||S.pass.season!==se)S.pass={season:se,pts:0,claimed:[],sp:{},sc:[]};
+  if(!S.pass.sp)S.pass.sp={};if(!S.pass.sc)S.pass.sc=[];
+  if(S.pass.dk!==dk){S.pass.dk=dk;S.pass.dp={};S.pass.dc=[];}return S.pass;}
+function passInc(evt,n,mode){const P2=ensurePass();for(const o of [P2.dp,P2.sp]){if(mode==='max')o[evt]=Math.max(o[evt]||0,n);else o[evt]=(o[evt]||0)+n;}}
+const pmDone=(m,o)=>(o[m.evt]||0)>=m.goal;
+const passTier=()=>Math.min(PASS.length,Math.floor(ensurePass().pts/100));
+const passLeft=()=>14-kstDay()%14;
+const passCan=()=>{const P2=ensurePass(),t=passTier();for(let i=1;i<=t;i++)if(!P2.claimed.includes(i))return true;
+  return PMD.some(m=>pmDone(m,P2.dp)&&!P2.dc.includes(m.id))||PMS.some(m=>pmDone(m,P2.sp)&&!P2.sc.includes(m.id));};
+function passAdd(n){const P2=ensurePass();P2.pts=Math.min(PASS.length*100,P2.pts+n);}
 function grant(r){if(r[1]==='g')S.gold+=r[0];else if(r[1]==='j')S.gems+=r[0];else if(r[1]==='box')S.box=(S.box||0)+r[0];else if(r[1]==='ebox')S.ebox=(S.ebox||0)+r[0];else S.pot[r[1]]=(S.pot[r[1]]||0)+r[0];}
 
 /* ---------- 맵 ---------- */
@@ -997,13 +1031,19 @@ const ETYPES={
 };
 function pickType(kn){const o=[['slime',1]];if(wave>=2)o.push(['bat',.6]);if(wave>=3)o.push(['skel',.55]);if(wave>=5&&kn<(wave>=8?2:1))o.push(['knight',.35]);
   let r=Math.random()*o.reduce((a,x)=>a+x[1],0);for(const [k,w] of o){if((r-=w)<=0)return k;}return 'slime';}
+const DUN_BOSS=[{mini:'king',big:'king',bigEmp:1},{mini:'queen',big:'guardian'},{mini:'king',big:'king',bigEmp:1}];
 function startWave(){
-  doorOpen=false;setMap(curMap,layoutFor(wave));buildFlow();
+  const bossF=wave%10===0,bigF=wave%50===0;
+  doorOpen=false;setMap(curMap,bossF?'A':layoutFor(wave));buildFlow();
   S.st.best=Math.max(S.st.best,wave);{const bk={war:'bestWar',arc:'bestArc',mag:'bestMag'}[ST.cls];S.st[bk]=Math.max(S.st[bk]||0,wave);}inc('floorMax',wave,'max');inc('cf_'+ST.cls,wave,'max');if(diff)S.st.bestHard=Math.max(S.st.bestHard,wave);
-  const n=Math.min(2+wave,8),types=[];let kn=0;
+  const n=bigF?0:bossF?Math.min(1+Math.floor(wave/10),4):Math.min(2+wave,8),types=[];let kn=0;
   for(let i=0;i<n;i++){const t=pickType(kn);if(t==='knight')kn++;types.push(t);}
   const intro={2:'bat',3:'skel',5:'knight'}[wave];if(intro&&!types.includes(intro))types[0]=intro;
   types.forEach(t=>spawn(t));state='play';
+  if(bossF){const DB=DUN_BOSS[curMap]||DUN_BOSS[0],bt=bigF?DB.big:DB.mini;spawn(bt);const b=enemies[enemies.length-1];b.x=LW/2;b.y=3*T+8;b.t=b.t0=1.4;
+    if(bigF&&DB.bigEmp){b.emp=1;b.bname='슬라임 황제';}
+    b.max=b.hp=Math.round(b.max*(bigF?1.6:.55)*(1+wave/60));
+    say(bigF?`${wave}층: 강력한 보스, ${b.bname||ETYPES[bt].name}!`:`${wave}층: 중간 보스, ${ETYPES[bt].name}!`,2.6);return;}
   if(!S.seen)S.seen=[];const nw=[...new Set(types)].find(t=>t!=='slime'&&!S.seen.includes(t));
   const hasW=waterT.length>0;if(hasW&&!S.seen.includes('water')&&!ST.swim){S.seen.push('water');save();say('물에는 들어갈 수 없어요. 영혼 소환에서 얻는 물갈퀴 장화가 있으면 건널 수 있어요',4.5);}
   else if(nw){S.seen.push(nw);save();say(`새로운 적, ${ETYPES[nw].name}! ${ETYPES[nw].tip}`,4.5);}
@@ -1015,7 +1055,7 @@ function spawn(type='slime'){
     if(v===1||(v===2&&!fly))continue;if(!fly&&flowW[ty*W+tx]>=1e9)continue;
     const cx=tx*T+8,cy=ty*T+8;if(Math.hypot(cx-P.x,cy-P.y)<64)continue;c.push([cx,cy]);}
   if(c.length){[x,y]=c[Math.floor(Math.random()*c.length)];}
-  const D=ETYPES[type],hp=Math.round(D.hp(wave)*(diff?1.5:1)),t=.8+Math.random()*.5;
+  const D=ETYPES[type],hp=Math.round(D.hp(wave)*(diff?1.5:1)*(!story&&!rush?1+Math.max(0,wave-15)*.03:1)),t=.8+Math.random()*.5;
   enemies.push({type,x,y,r:D.r,hp,max:hp,armor:D.armor?D.armor(wave):0,gm:D.gm,col:D.col,kbm:D.kbm||1,swim:fly,state:'spawn',t,t0:t,vx:0,vy:0,dx:0,dy:0,
     hurt:0,ph:Math.random()*6,hitDone:false,fa:-Math.PI/2,cd:1+Math.random(),orb:Math.random()<.5?1:-1,swing:0});
 }
@@ -1161,7 +1201,7 @@ function hitEnemy(e,r,dx,dy,kb){
   nums.push({x:e.x,y:e.y-12,v:dm,t:.7,c:r.psn?'#8fe06a':blocked?'#8a909a':back?'#ff9a3a':r.crit?'#ffd25a':'#ffffff'});
   burst(e.x,e.y-4,4,blocked?'#ffe9a0':'#c8f2a0',40);
   if(e.hp<=0){
-    runKills++;S.st.kills++;sfx('kill');if(ST&&ST.main&&ST.main.haste)P.haste=2;heroXP(XPV[e.type]*(1+wave*.1));if(e.type==='shroom')eclouds.push({x:e.x,y:e.y,r:16,t:2,acc:0,d:Math.min(3+Math.floor(wave*.3),9)});
+    runKills++;S.st.kills++;sfx('kill');if(ST&&ST.main&&ST.main.haste)P.haste=2;heroXP(XPV[e.type]*(1+wave*.1)*(diff?1.5:1));if(e.type==='shroom')eclouds.push({x:e.x,y:e.y,r:16,t:2,acc:0,d:Math.min(3+Math.floor(wave*.3),9)});
     if(e.type==='mgolem'){for(let k=0;k<2;k++){spawn('moss');const m=enemies[enemies.length-1];m.x=e.x+(k?7:-7);m.y=e.y;m.t=m.t0=.25;if(collides(m)){m.x=e.x;}}}
     {const kk={knight:'kKnight',skel:'kSkel',bat:'kBat'}[e.type];if(kk)S.st[kk]=(S.st[kk]||0)+1;}inc('kills');inc({slime:'kSlime',bat:'kBat',skel:'kSkel',knight:'kKnight'}[e.type]);
     const g=Math.max(1,Math.round((2.5+wave*.7)*MAPS[curMap].gold*(diff?1.5:1)*(ST.goldMul+P.b.gold)*(e.gm||1)));
@@ -1191,7 +1231,7 @@ function tryAttack(){
     return;}
   if(ST.cls==='rog'){P.swing=P.swMax=.1;P.atkCd=W.cd||.22;P.wk='dagger';sfx('dagger');let hit=false;const C2=CLASSES.rog;
     for(const e of enemies){if(e.state==='spawn'||e.hp<=0)continue;const dx=e.x-P.x,dy=e.y-P.y,d=Math.hypot(dx,dy)||1;
-      if(d>e.r+16||(d>6&&(dx*ax+dy*ay)/d<.5))continue;
+      if(d>e.r+22||(d>8&&(dx*ax+dy*ay)/d<.3))continue;
       const behind=e.type==='knight'&&(dx/d)*Math.cos(e.fa)+(dy/d)*Math.sin(e.fa)>.45,open=behind||e.state==='rest'||e.state==='windup'||e.stun>0;
       const cb=open?.4+(ST.six==='rog'?.3:0):0;
       hitEnemy(e,roll(W,C2.base,C2.spread,1,0,cb),dx,dy,50);if(W.twin&&e.hp>0)hitEnemy(e,roll(W,C2.base,C2.spread,.6,0,cb),dx,dy,30);
@@ -1324,7 +1364,7 @@ const SKFX={
   w1(W,K,ax,ay){P.swing=P.swMax=.2;P.wk='sword';P.full=0;P.wide=true;sfx('crit');let tot=0;
     for(const e of liveIn(P.x,P.y,26)){const dx=e.x-P.x,dy=e.y-P.y,d=Math.hypot(dx,dy)||1;if(d>8&&(dx*ax+dy*ay)/d<.3)continue;tot+=hitEnemy(e,skRoll('war',W,K),dx,dy,180)||0;}
     rings.push({x:P.x+ax*12,y:P.y+ay*12,t:.25,rad:14,c:'255,90,110'});
-    const h=Math.min(Math.round(tot*.3),P.max-P.hp);if(h>0){P.hp+=h;nums.push({x:P.x+6,y:P.y-18,v:'+'+h,t:.8,c:'#7be08a'});}hitStop=.06;},
+    const h=Math.min(Math.round(tot*.2),P.max-P.hp);if(h>0){P.hp+=h;nums.push({x:P.x+6,y:P.y-18,v:'+'+h,t:.8,c:'#7be08a'});}hitStop=.06;},
   w2(W,K,ax,ay){P.swing=P.swMax=.2;P.wk='sword';P.full=0;P.wide=true;shake=Math.max(shake,3);sfx('hammer');
     projs.push({x:P.x+ax*6,y:P.y+ay*6,vx:ax*220,vy:ay*220,t:.5,kind:'quake',cls:'war',coef:K.coef,pen:K.pen,hit:[],W});},
   w3(W){P.storm=3;P.stormA=0;sfx('zap');},
@@ -1408,7 +1448,7 @@ function updateEclouds(dt){for(const c of eclouds){c.t-=dt;c.acc+=dt;if(Math.ran
     if(c.acc>=.5){c.acc=0;if(state==='play'&&Math.hypot(P.x-c.x,(P.y-c.y)*1.4)<c.r&&P.rollT<=0){const pi=P.inv;P.inv=0;hurtPlayer(c.d,{dx:0,dy:0});P.inv=Math.min(P.inv,pi>0?pi:.05);}}}
   eclouds=eclouds.filter(c=>c.t>0);}
 function hurtPlayer(dmg,e){
-  dmg=Math.max(1,Math.round(dmg*(diff?1.4:1)*(1-ST.def)));
+  dmg=Math.max(1,Math.round(dmg*(diff?1.4:1)*(!story&&!rush?1+Math.max(0,wave-10)*.04:1)*(rush?1.6+.25*(rush.f-1):1)*(1-ST.def)));
   P.hp=Math.max(0,P.hp-dmg);sfx('hurt');P.inv=.7;P.hurtT=.7;P.vx+=e.dx*120;P.vy+=e.dy*120;shake=3;
   nums.push({x:P.x,y:P.y-14,v:dmg,t:.7,c:'#ff6b5a'});burst(P.x,P.y-5,6,'#e8574a',50);
   if(P.hp<=0&&ST.six==='war'&&!PT[PI].guard){PT[PI].guard=true;P.hp=Math.round(P.max*.3);P.inv=1.5;say('불굴! 다시 일어선다',2);burst(P.x,P.y-6,16,'#f6d38e',70);sfx('up');}
@@ -1443,12 +1483,18 @@ let buffKey='';
 function renderBuffs(){const on=lobby.classList.contains('hide')&&P&&P.bc;const k=on?JSON.stringify(P.bc):'';if(k===buffKey)return;buffKey=k;
   $('buffs').innerHTML=on?BOONS.filter(o=>P.bc[o.id]).map(o=>`<span>${o.tag}${P.bc[o.id]>1?' ×'+P.bc[o.id]:''}</span>`).join(''):'';}
 let story=null,storyT=0,storyF=0,storyR=0,roundWait=0,pendGold=0,pendXP={};
-function restart(){if(story){startStage(story.id);return;}resetGame();inc('runs');startWave();}
+let rush=null;
+function startRush(){if(brLeft()<=0||!S.story['1-6'])return;if(!S.br||S.br.key!==dayKey())S.br={key:dayKey(),used:0};S.br.used++;inc('rush');save();
+  closeSheet();lobby.classList.add('hide');ov.classList.add('hide');resetGame();diff=0;story=null;rush={f:1,got:[]};inc('runs');rushRoom();}
+function rushRoom(){const B=RUSH_SEQ[(rush.f-1)%RUSH_SEQ.length];wave=8+rush.f*3;setMap(B.map,'A');doorOpen=false;buildFlow();
+  spawn(B.type);const b=enemies[enemies.length-1];b.x=LW/2;b.y=3*T+8;b.t=b.t0=1.4;if(B.emp){b.emp=1;b.bname='슬라임 황제';}
+  b.max=b.hp=Math.round(b.max*2.2*Math.pow(1.45,rush.f-1)*(B.emp?1.3:1));state='play';say(`보스 러시 ${rush.f}층: ${rushName(rush.f)}!`,2.4);}
+function restart(){if(rush){if(brLeft()>0)startRush();else showLobby();return;}if(story){startStage(story.id);return;}resetGame();inc('runs');startWave();}
 function findStage(id){for(const c of STORY)if(c.stages){const s2=c.stages.find(x=>x.id===id);if(s2)return [c,s2];}return [null,null];}
 function dunOpen(mi){const c=STORY.find(o=>o.map===mi&&o.stages);return !!(c&&c.stages.every(x=>S.story[x.id]));}
 function stageOpen(id){const [c,s2]=findStage(id);if(!c)return false;const i=c.stages.indexOf(s2);return i===0?(c.ch===1||STORY.some(o=>o.ch===c.ch-1&&o.stages&&o.stages.every(x=>S.story[x.id]))):!!S.story[c.stages[i-1].id];}
 function startStage(id){const [c,st]=findStage(id);if(!st)return;
-  closeSheet();lobby.classList.add('hide');ov.classList.add('hide');resetGame();story=st;if(S.sprog)delete S.sprog[st.id];storyF=0;storyT=0;pendGold=0;pendXP={};inc('runs');
+  closeSheet();lobby.classList.add('hide');ov.classList.add('hide');resetGame();diff=0;story=st;if(S.sprog)delete S.sprog[st.id];storyF=0;storyT=0;pendGold=0;pendXP={};inc('runs');
   if(storyF===0&&st.pre&&!S.talked.includes(st.id+'a')){S.talked.push(st.id+'a');save();setMap(c.map,st.lays[0]);showDialog(st.pre,storyRoom);}else storyRoom();}
 function storyRoom(){const st=story,[c]=findStage(st.id),f=storyF;wave=st.lv+Math.floor(f/2);setMap(c.map,st.lays[f]);doorOpen=false;buildFlow();
   storyR=0;roundWait=0;st.rooms[f][0].forEach(t=>spawn(t));
@@ -1490,6 +1536,7 @@ $('dlgSkip').addEventListener('click',e=>{e.stopPropagation();endDlg();});
 
 function update(dt){
   time+=dt;msgT-=dt;if(fade>0)fade-=dt;if(story&&(state==='play'||state==='open'))storyT+=dt;
+  if(rush&&(state==='play'||state==='open')){rush.t=(rush.t||0)+dt;if(rush.t>=RUSH_TIME&&!rush.timeout){rush.timeout=1;state='dying';timer=.4;sfx('die');say('시간 종료!',2);}}
   if(state==='play'||state==='open'){
     P.atkCd-=dt;P.swing-=dt;P.skCd-=dt;P.heroCd-=dt;P.haste-=dt;
     PT.forEach((m,i)=>{if(i!==PI&&m.alive){m.hp=Math.min(m.max,m.hp+dt);m.skCd-=dt;}});P.swapCd-=dt;P.rollCd-=dt;P.inv-=dt;P.hurtT-=dt;
@@ -1520,7 +1567,7 @@ function update(dt){
       const dx=P.x-e.x,dy=P.y-e.y,d=Math.hypot(dx,dy)||1;let mvx=0,mvy=0;
       if(e.slow>0)e.slow-=dt;const sf=e.slow>0?.45:1;
       if(e.stun>0){e.stun-=dt;if(e.state==='windup'||e.state==='lunge'){e.state='rest';e.t=.3;}}
-      else{const m=AI[e.type](e,dt,dx,dy,d);mvx=m[0];mvy=m[1];}
+      else{const m=AI[e.type](e,dt*(rush&&e.boss?1.3:1),dx,dy,d);mvx=m[0];mvy=m[1];}
       move(e,(mvx*sf+e.vx)*dt,(mvy*sf+e.vy)*dt);const g=Math.exp(-10*dt);e.vx*=g;e.vy*=g;
       if(e.state!=='lunge'&&d<e.r+P.r){const o=(e.r+P.r-d)*.5;move(P,dx/d*o,dy/d*o);}
     }
@@ -1530,14 +1577,17 @@ function update(dt){
     if(state==='play'&&enemies.length===0&&story&&storyR<story.rooms[storyF].length-1){
       if(!roundWait){roundWait=1.2;say(`라운드 ${storyR+2}/${story.rooms[storyF].length}`,1.6);sfx('floor');}
       else{roundWait-=dt;if(roundWait<=0){roundWait=0;storyR++;story.rooms[storyF][storyR].forEach(t=>spawn(t));}}}
-    else if(state==='play'&&enemies.length===0){state='open';doorOpen=true;sfx('door');inc('rooms');const h=Math.min(ST.heal+P.b.heal,P.max-P.hp);P.hp+=h;
+    else if(state==='play'&&enemies.length===0){state='open';doorOpen=true;sfx('door');inc('rooms');
+      if(rush&&!rush.got.includes(rush.f)){rush.got.push(rush.f);const rw=rushRw(rush.f);rw.forEach(grant);S.st.bossBest=Math.max(S.st.bossBest||0,rush.f);save();say(`${rush.f}층 돌파! ${rw.map(rewTxt).join(', ')}`,3.2);sfx('up');}const h=Math.min(ST.heal+P.b.heal,P.max-P.hp);P.hp+=h;
       PT.forEach((m,i)=>{if(i!==PI&&m.alive)m.hp=Math.min(m.max,m.hp+m.st.heal+P.b.heal);});
       say(h>0?`방 클리어! 체력 +${h}, 위쪽 문으로 가요`:'방 클리어! 위쪽 문으로 가요',3);}
     if(state==='open'&&P.y<26&&Math.abs(P.x-(DOORX*T+8))<15){state='transit';timer=.45;atkBtn=false;sfx('floor');}
   }
-  if(state==='transit'){timer-=dt;if(timer<=0&&story){fade=.45;storyNext();}else if(timer<=0){heroXP(10*wave,true);wave++;inc('floors');P.x=LW/2;P.y=LH-40;P.vx=P.vy=0;P.fx=0;P.fy=-1;parts=[];nums=[];projs=[];rings=[];bolts=[];eprojs=[];drops=[];clouds=[];eclouds=[];fade=.45;setupMinions();if(Math.random()<BOON_P&&boonPool().length>=3)openBoon();else startWave();}}
+  if(state==='transit'){timer-=dt;if(timer<=0&&story){fade=.45;storyNext();}else if(timer<=0&&rush){rush.f++;fade=.45;PT.forEach((m,i)=>{if(i===PI)P.hp=Math.min(P.max,P.hp+P.max*.2);else if(m.alive)m.hp=Math.min(m.max,m.hp+m.max*.2);});
+    P.x=LW/2;P.y=LH-40;P.vx=P.vy=0;P.fx=0;P.fy=-1;parts=[];nums=[];projs=[];rings=[];bolts=[];eprojs=[];drops=[];clouds=[];eclouds=[];setupMinions();rushRoom();}else if(timer<=0){heroXP(10*wave,true);wave++;inc('floors');P.x=LW/2;P.y=LH-40;P.vx=P.vy=0;P.fx=0;P.fy=-1;parts=[];nums=[];projs=[];rings=[];bolts=[];eprojs=[];drops=[];clouds=[];eclouds=[];fade=.45;setupMinions();if(Math.random()<BOON_P&&boonPool().length>=3)openBoon();else startWave();}}
   if(state==='dying'){timer-=dt;if(timer<=0){state='dead';const g=runGold;bank();
-    if(story){pendGold=0;pendXP={};showOv('스테이지 실패',`${story.id} ${storyF+1}층에서 파티가 모두 쓰러졌어요.\n이번 스테이지의 진행과 보상은 사라졌어요.\n다시 도전하면 1층부터 시작해요.`,'다시 도전',restart,'로비로',showLobby);}else showOv('쓰러졌어요',`${wave}층까지 내려갔어요. 슬라임 ${runKills}마리를 잡고 골드 ${g}을 챙겼어요.`,'다시 도전',restart,'로비로',showLobby);}}
+    if(rush){const n=rush.got.length,rw=rush.got.flatMap(f=>rushRw(f));showOv(rush.timeout?'시간 종료':'보스 러시 종료',`${rush.timeout?'제한 시간 4분이 끝났어요.\n':''}${n?`${n}층까지 돌파했어요!`:'1층 보스를 쓰러뜨리지 못했어요.'}\n최고 기록 ${S.st.bossBest||0}층${rw.length?`\n\n받은 보상: ${rw.map(rewTxt).join(', ')}`:''}\n오늘 남은 도전 ${brLeft()}번`,brLeft()>0?'다시 도전':'로비로',brLeft()>0?restart:showLobby,brLeft()>0?'로비로':null,brLeft()>0?showLobby:null);}
+    else if(story){pendGold=0;pendXP={};showOv('스테이지 실패',`${story.id} ${storyF+1}층에서 파티가 모두 쓰러졌어요.\n이번 스테이지의 진행과 보상은 사라졌어요.\n다시 도전하면 1층부터 시작해요.`,'다시 도전',restart,'로비로',showLobby);}else showOv('쓰러졌어요',`${wave}층까지 내려갔어요. 슬라임 ${runKills}마리를 잡고 골드 ${g}을 챙겼어요.`,'다시 도전',restart,'로비로',showLobby);}}
   for(const p of parts){p.t-=dt;p.x+=p.vx*dt;p.y+=p.vy*dt;p.vy+=120*dt;p.vx*=.96;}
   parts=parts.filter(p=>p.t>0);
   for(const n of nums){n.t-=dt;n.y-=18*dt;}
@@ -1610,7 +1660,7 @@ function drawPlayer(){
   ctx.restore();
   if(P.swing>0&&P.wk!=='sword'&&MELEE.includes(P.wk)){
     const W=ST.sub,cy=P.y-5,ca=Math.cos(P.sa),sa=Math.sin(P.sa);
-    if(P.wk==='dagger'){const p=1-P.swing/.1,L=6+9*Math.sin(p*Math.PI);ctx.strokeStyle=W.blade;ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(P.x+ca*3,cy+sa*3);ctx.lineTo(P.x+ca*L,cy+sa*L);ctx.stroke();}
+    if(P.wk==='dagger'){const p=1-P.swing/.1,L=8+(ST.cls==='rog'?14:9)*Math.sin(p*Math.PI);ctx.strokeStyle=W.blade;ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(P.x+ca*3,cy+sa*3);ctx.lineTo(P.x+ca*L,cy+sa*L);ctx.stroke();}
     else if(P.wk==='spear'){const p=1-P.swing/.18,L=12+26*Math.sin(p*Math.PI);ctx.strokeStyle='#7a5a38';ctx.lineWidth=1.5;ctx.beginPath();ctx.moveTo(P.x-ca*4,cy-sa*4);ctx.lineTo(P.x+ca*(L-3),cy+sa*(L-3));ctx.stroke();
       ctx.strokeStyle=W.blade;ctx.lineWidth=2.5;ctx.beginPath();ctx.moveTo(P.x+ca*(L-4),cy+sa*(L-4));ctx.lineTo(P.x+ca*L,cy+sa*L);ctx.stroke();}
     else{const p=1-P.swing/.22,a=P.sa-1.6+1.6*Math.min(1,p*1.6),hx2=P.x+Math.cos(a)*12,hy2=cy+Math.sin(a)*12;ctx.strokeStyle='#6b4a2e';ctx.lineWidth=1.5;ctx.beginPath();ctx.moveTo(P.x,cy);ctx.lineTo(hx2,hy2);ctx.stroke();
@@ -1765,7 +1815,7 @@ function showOv(t,s,b,fn,b2,fn2){$('ovT').textContent=t;$('ovS').textContent=s;$
 $('ovB').addEventListener('click',()=>{ov.classList.add('hide');const f=ovFn;ovFn=null;if(f)f();});
 $('ovB2').addEventListener('click',()=>{ov.classList.add('hide');const f=ovFn2;ovFn2=null;if(f)f();});
 function pause(){if(state!=='play'&&state!=='open')return;prevState=state;state='paused';atkBtn=false;
-  showOv('일시정지',story?`지금 로비로 나가면 이번 스테이지(${story.id}, 지금 ${storyF+1}층)의 진행과 보상(골드 ${pendGold})이 모두 사라져요.\n다음에 1층부터 다시 시작해요.`:'','계속하기',()=>{state=prevState;last=performance.now();},'로비로',()=>{bank();showLobby();});}
+  showOv('일시정지',rush?`지금 나가면 보스 러시가 끝나요. 이미 돌파한 층의 보상은 받았어요.\n도전 횟수는 돌아오지 않아요.`:story?`지금 로비로 나가면 이번 스테이지(${story.id}, 지금 ${storyF+1}층)의 진행과 보상(골드 ${pendGold})이 모두 사라져요.\n다음에 1층부터 다시 시작해요.`:'','계속하기',()=>{state=prevState;last=performance.now();},'로비로',()=>{bank();showLobby();});}
 $('pauseB').addEventListener('click',pause);
 let faceKey='';
 function renderFaces(){const f=$('faces');if(!PT.length||!lobby.classList.contains('hide')){if(faceKey!=='x'){f.innerHTML='';faceKey='x';}return;}
@@ -1786,7 +1836,7 @@ function hud(){
     if(x+w>sg.width-4)x=cr.left-sg.left+(P.x-9)*k-w;pm.style.left=Math.max(4,x)+'px';pm.style.top=y+'px';}
   else pm.classList.remove('show');
   $('hpFill').style.width=(P.hp/P.max*100)+'%';$('hpText').textContent=`${Math.ceil(P.hp)} / ${P.max}`;
-  $('wv').textContent=story?`${story.id} ${storyF+1}/5층`:wave+'층';
+  $('wv').textContent=rush?`러시 ${rush.f}층 ${(()=>{const r=Math.max(0,Math.ceil(RUSH_TIME-(rush.t||0)));return Math.floor(r/60)+':'+String(r%60).padStart(2,'0');})()}`:story?`${story.id} ${storyF+1}/5층`:(diff?'어려움 ':'')+wave+'층';
   {const bo=enemies.find(e=>e.boss&&e.hp>0&&e.state!=='spawn');$('bossBar').classList.toggle('hide',!bo);if(bo){$('bossName').textContent=bo.bname||ETYPES[bo.type].name;$('bossFill').style.width=(bo.hp/bo.max*100)+'%';}}$('goldStat').innerHTML=COIN+'<b>'+runGold+'</b>';}
 function fit(){const s=$('stage').getBoundingClientRect();let k=Math.min((s.width-8)/LW,(s.height-8)/LH);
   if(k>=2)k=Math.floor(k*2)/2;k=Math.max(k,.5);cv.style.width=Math.floor(LW*k)+'px';cv.style.height=Math.floor(LH*k)+'px';}
@@ -1803,9 +1853,9 @@ function renderLobby(){
   $('bestTxt').textContent=S.st.best?`최고 ${S.st.best}층`:'첫 탐험을 기다리는 중';
   $('startSub').textContent=`${S.party.map(id=>CLASSES[id].name).join(', ')} / ${MAPS[S.sel.map].name}`;
   {const id=S.party[0],H=S.heroes[id];$('heroName').textContent=`${CLASSES[id].name} Lv${H.lv}, ${SKN(H.skin)}`;}
-  $('mDot').classList.toggle('hide',claimable()===0);$('aDot').classList.toggle('hide',!attCan());
+  $('mDot').classList.toggle('hide',claimable()===0);$('aDot').classList.toggle('hide',!attCan());$('pDot').classList.toggle('hide',!passCan());
 }
-function showLobby(){story=null;pendGold=0;pendXP={};$('boon').classList.add('hide');$('dlg').classList.add('hide');$('bossBar').classList.add('hide');resetGame();state='title';ov.classList.add('hide');renderLobby();lobby.classList.remove('hide');}
+function showLobby(){story=null;rush=null;pendGold=0;pendXP={};$('boon').classList.add('hide');$('dlg').classList.add('hide');$('bossBar').classList.add('hide');resetGame();state='title';ov.classList.add('hide');renderLobby();lobby.classList.remove('hide');}
 function drawHero(){
   const t=performance.now()/1000,s=stats();hx.clearRect(0,0,48,40);
   hx.fillStyle='#3a3146';hx.fillRect(0,32,48,8);hx.fillStyle='#302839';hx.fillRect(0,32,48,1);
@@ -1850,7 +1900,7 @@ const swatch=it=>`<span class="sw" style="background:${it.col||it.blade||it.b}">
 const PANELS={
   mode:['출전 준비',()=>{
     const best=S.st.best;
-    let h=`<div class="tabs"><button class="tab ${modeTab==='story'?'on':''}" data-act="mtab2" data-id="story">스토리</button><button class="tab ${modeTab==='dun'?'on':''}" data-act="mtab2" data-id="dun">던전 돌파</button></div>`;
+    let h=`<div class="tabs"><button class="tab ${modeTab==='story'?'on':''}" data-act="mtab2" data-id="story">스토리</button><button class="tab ${modeTab==='dun'?'on':''}" data-act="mtab2" data-id="dun">던전 돌파</button><button class="tab ${modeTab==='rush'?'on':''}" data-act="mtab2" data-id="rush">보스 러시</button></div>`;
     if(modeTab==='story'){
       return h+STORY.map(c=>{if(!c.stages)return `<div class="chap lock"><h4>${c.name}<small>준비 중</small></h4></div>`;
         const tot=c.stages.reduce((a,x)=>a+(S.story[x.id]||0),0);
@@ -1864,14 +1914,20 @@ const PANELS={
             <span class="st">${'★'.repeat(stv)}${'☆'.repeat(3-stv)}</span><span class="srw ${cl?'got':''}">${rewIcon(x.rw)}${x.rw2?rewIcon(x.rw2):''}${cl?'<em>✓</em>':''}</span></button>`;}).join('')+
           `</div></div>`;}).join('')
         +`<p class="hint">별 3개 조건: 5층 모두 클리어, 파티 체력 절반 이상, 제한 시간 안에 클리어. 스테이지 아래 아이콘은 첫 클리어 보상이에요.</p>`;}
+    if(modeTab==='rush'){const open=!!S.story['1-6'],left=brLeft(),best=S.st.bossBest||0;
+      if(!open)return h+`<div class="chap" style="text-align:center;padding:24px 14px"><b style="font-weight:normal;font-size:19px">보스 러시 잠김</b><p class="hint">스토리 1-6 슬라임 왕을 쓰러뜨리면 열려요.</p></div>`;
+      return h+`<div class="chap"><h4>보스 러시<small>오늘 남은 도전 ${left} / ${RUSH_DAY}</small></h4>
+        <p class="hint" style="text-align:left;margin:0 0 8px">매 층마다 아주 강력한 보스가 나와요. 층을 돌파할 때마다 보상을 바로 받고, 층 사이에 체력을 20% 회복해요. 제한 시간은 한 판에 4분이에요. 하루 ${RUSH_DAY}번 도전할 수 있어요. 최고 기록 ${best}층</p>
+        <div class="rushl">${[1,2,3,4,5].map(f=>`<div class="rushc ${best>=f?'got':''}"><b>${f}층</b><small>${rushName(f)}</small><div class="ari">${rushRw(f).map(rewIcon).join('')}</div>${best>=f?'<em>✓</em>':''}</div>`).join('')}</div>
+        <p class="hint">5층 다음부터는 보스가 반복되며 계속 강해지고, 보상도 층마다 늘어나요.</p></div>
+        <button class="go" data-act="rushgo" ${left>0?'':'disabled'}>${left>0?'도전하기':'오늘 도전 끝 (내일 다시)'}</button>`;}
     if(!MAPS.some((m,i)=>dunOpen(i)))return h+`<div class="chap" style="text-align:center;padding:24px 14px"><b style="font-weight:normal;font-size:19px">던전 돌파 잠김</b><p class="hint">스토리 1장 지하 감옥을 모두 깨면 지하 감옥 던전이 열려요.<br>각 장을 깰 때마다 그 맵의 던전이 하나씩 열려요.</p></div>`;
-    if(!dunOpen(S.sel.map))S.sel.map=MAPS.findIndex((m,i)=>dunOpen(i));
+    if(!dunOpen(S.sel.map))S.sel.map=MAPS.findIndex((m,i)=>dunOpen(i));if(S.sel.diff&&!hardOpen())S.sel.diff=0;
     return h+`<h3>맵</h3><div class="maps">${MAPS.map((m,i)=>{const lock=!dunOpen(i);
       return `<button class="mapc ${S.sel.map===i?'on':''} ${lock?'lock':''}" data-act="map" data-i="${i}"><canvas data-thumb="${i}" width="88" height="51"></canvas>
       <div class="mn">${m.name}</div><div class="md">${lock?`스토리 ${i+1}장 클리어 시 열림`:m.desc+(m.gold>1?`, 골드 ${m.gold}배`:'')}</div></button>`;}).join('')}</div>
-    <h3>모드</h3><div class="opts"><button class="opt on">던전 돌파<small>적을 무찌르고 계속 내려가기</small></button><button class="opt" disabled>보스 러시<small>준비 중</small></button></div>
-    <h3>난이도</h3><div class="opts"><button class="opt on">보통<small>기본 보상</small></button>
-    <button class="opt" disabled>어려움<small>준비 중</small></button></div>
+    <h3>난이도</h3><div class="opts"><button class="opt ${S.sel.diff?'':'on'}" data-act="diff" data-i="0">보통<small>최고 ${S.st.best||0}층</small></button>
+    <button class="opt ${S.sel.diff?'on':''}" data-act="diff" data-i="1" ${hardOpen()?'':'disabled'}>어려움<small>${hardOpen()?`적 강화, 골드, 경험치 1.5배. 최고 ${S.st.bestHard||0}층`:'보통 10층 도달 시 열림'}</small></button></div>
     <button class="go" data-act="go">출발</button>`;}],
   hero:['영웅',()=>{
     if(!heroSel||!S.heroes[heroSel]){heroSel=null;
@@ -1962,6 +2018,18 @@ const PANELS={
       <h3>확률표</h3><div class="rtab"><div class="rh"><span>등급</span><span>영웅</span><span>영혼조각</span></div>`+['l','e','r','c'].map(g=>{const hs=HERO_IDS.filter(id=>CLASSES[id].grade===g);
         return `<div class="rr"><span><span class="grade g-${g}">${GRADES[g].name}</span></span><span>${(HERO_RATE[g]*100).toFixed(1)}%<small>중복 시 조각 ${DUP_N[g]}</small></span><span>${Math.round(FRAG_RATE[g]*100)}%<small>${FRAG_N[g]}개씩</small></span></div>
           <div class="rn">${hs.length?hs.map(id=>CLASSES[id].name+(inPool(id)?'':` (스토리 ${STORY_LOCK[id]} 클리어 후)`)).join(', '):'아직 영웅 없음, 아래 등급으로 대체'}</div>`;}).join('')+`</div>`;}],
+  pass:['패스',()=>{const pmRow=(m,o,c,k)=>{const v=Math.min(o[m.evt]||0,m.goal),done=v>=m.goal,got=c.includes(m.id);
+      return `<div class="item"><span class="tx"><b>${m.name}</b><small>${v} / ${m.goal}</small><div class="bar"><i style="width:${v/m.goal*100}%"></i></div></span><button class="buy ${done&&!got?'claim':''}" data-act="pclaim" data-id="${k}:${m.id}" ${done&&!got?'':'disabled'}>${got?'완료':`🎫 +${m.pts}`}</button></div>`;};
+const P2=ensurePass(),t=passTier(),full=t>=PASS.length,prog=full?100:P2.pts%100,can=passCan();
+    return `<div class="lvbox"><div class="lvtop"><b>${full?'최종 단계':`${t+1}단계까지`}</b><small>시즌 남은 기간 ${passLeft()}일</small></div>
+      <div class="lvg"><i class="cur" style="width:${prog}%"></i></div><div class="lvxp">${full?'모든 단계 달성':`${prog} / 100`}</div></div>
+      <p class="hint" style="text-align:left">아래 패스 미션을 깨면 패스 경험치를 받아요. 게이지가 100이 되면 다음 단계가 열려요. 2주마다 새 시즌이 시작돼요.</p>
+      <h3>오늘의 패스 미션 <small style="font-size:12px">(매일 초기화)</small></h3><div class="list">${PMD.map(m=>pmRow(m,P2.dp,P2.dc,'d')).join('')}</div>
+      <h3>시즌 패스 미션 <small style="font-size:12px">(남은 ${passLeft()}일)</small></h3><div class="list">${PMS.map(m=>pmRow(m,P2.sp,P2.sc,'s')).join('')}</div>
+      <h3>단계 보상</h3>
+      <button class="go" data-act="passget" ${can?'':'disabled'} style="margin:4px 0 10px">${can?'받을 수 있는 보상 모두 받기':'받을 보상이 없어요'}</button>
+      <div class="passl">`+PASS.map((rs,i)=>{const lv=i+1,reach=t>=lv,got=P2.claimed.includes(lv);
+        return `<div class="passc ${got?'got':reach?'reach':''} ${lv===PASS.length?'big':''}"><b>${lv}</b><div class="ari">${rs.map(rewIcon).join('')}</div>${got?'<em>✓</em>':''}</div>`;}).join('')+`</div>`;}],
   attend:['출석',()=>{const n=(S.att&&S.att.n)||0,today=n%7,can=attCan(),cycleStart=n-today;
     return `<p class="hint" style="text-align:left;margin:2px 0 8px">하루에 한 번 받을 수 있어요. 7일차까지 받으면 다시 1일차부터 시작해요. (지금까지 ${n}일 출석)</p><div class="attg">`+ATT.map((rs,i)=>{
       const got=i<today||(!can&&i===today&&false),cur=i===today;const done=i<today||(!can&&i===(today+6)%7&&false);
@@ -2030,6 +2098,7 @@ function sheetAct(e){
     if(!impArm){impArm=true;b.textContent='정말 덮어쓸까요? 한 번 더 누르기';return;}
     impArm=false;try{importCode(v);sfx('up');closeSheet();showLobby();toast('저장을 불러왔어요!');}catch(er){b.textContent='불러오기';toast('저장 코드가 올바르지 않아요');}return;}
   if(a==='map'){if(!dunOpen(i)){toast(`스토리 ${i+1}장을 모두 깨면 열려요`);return;}S.sel.map=i;}
+  else if(a==='diff'){if(i===1&&!hardOpen())return;S.sel.diff=i;}
   else if(a==='tab'){shopTab=id;renderSheet();shB.scrollTop=0;return;}
   else if(a==='mtab'){missionTab=id;renderSheet();shB.scrollTop=0;return;}
   else if(a==='claimP'){const [k,mid]=id.split(':');ensurePeriods();const pr=S.per[k],m=(k==='d'?DAILY:WEEKLY).find(x=>x.id===mid);
@@ -2069,13 +2138,18 @@ function sheetAct(e){
   else if(a==='stage'){if(!stageOpen(id))return;startStage(id);return;}
   else if(a==='opt'){if(id==='music')setMusic(!musicOn);else if(id==='sfx')setSfx(!sfxOn);else{OPT[id]=!OPT[id];saveOpt();}}
   else if(a==='gosave'){impArm=false;openSheet('save');return;}
-  else if(a==='attget'){if(!attCan())return;const n=S.att.n%7;ATT[n].forEach(r=>grant(r));S.att.n++;S.att.last=dayKey();sfx('up');
+  else if(a==='rushgo'){startRush();return;}
+  else if(a==='pclaim'){const [k,mid]=id.split(':'),P2=ensurePass(),list=k==='d'?PMD:PMS,o=k==='d'?P2.dp:P2.sp,c=k==='d'?P2.dc:P2.sc,m=list.find(x=>x.id===mid);
+    if(!m||c.includes(mid)||!pmDone(m,o))return;c.push(mid);const t0=passTier();passAdd(m.pts);sfx('coin');toast(passTier()>t0?`패스 ${passTier()}단계 달성!`:`패스 경험치 +${m.pts}`);}
+  else if(a==='passget'){const P2=ensurePass(),t=passTier();let got=[];for(let i=1;i<=t;i++)if(!P2.claimed.includes(i)){P2.claimed.push(i);PASS[i-1].forEach(r=>{grant(r);got.push(rewTxt(r));});}
+    if(!got.length)return;sfx('up');toast(`패스 보상: ${got.join(', ')}`);}
+  else if(a==='attget'){if(!attCan())return;const n=S.att.n%7;ATT[n].forEach(r=>grant(r));S.att.n++;S.att.last=dayKey();inc('attend');sfx('up');
     toast(`출석 ${n+1}일차: ${ATT[n].map(rewTxt).join(', ')}`);}
   else if(a==='stab'){sumTab=id;renderSheet();shB.scrollTop=0;return;}
   else if(a==='pull'){const kind=id[0]==='e'?'eq':'hero',n=+id.slice(1);
     const cost=kind==='eq'?(n===1?EPULL1:EPULL10):(n===1?PULL1:PULL10);
     const bk=kind==='hero'?'box':'ebox';if((S[bk]||0)>=n)S[bk]-=n;else if(S.gems>=cost)S.gems-=cost;else{toast('보석이 부족해요');return;}
-    lastPull=[];lastPull.kind=kind;for(let q=0;q<n;q++)lastPull.push(pullOne(kind));gachaPlay(lastPull);
+    lastPull=[];lastPull.kind=kind;inc(kind==='eq'?'epull':'hpull',n);for(let q=0;q<n;q++)lastPull.push(pullOne(kind));gachaPlay(lastPull);
     const nw=lastPull.filter(x=>x.isNew);if(nw.length)toast(`새로 얻음: ${nw.map(x=>x.acc?ITEMS[x.acc].name:CLASSES[x.id].name).join(', ')}!`);}
   else if(a==='starup'){const H=S.heroes[heroSel];if(!H)return;const sv=H.star||1,need=STAR_NEED[sv];if(sv>=MAXSTAR||(H.frag||0)<need||S.gold<starCost(sv))return;S.gold-=starCost(sv);
     H.frag-=need;H.star=sv+1;sfx('up');toast(`${CLASSES[heroSel].name} ${H.star}성!${H.star>=MAXSTAR?' 6성 효과 해방!':''}`);}
@@ -2099,6 +2173,7 @@ $('equipB').addEventListener('click',()=>openSheet('party'));
 $('shopB').addEventListener('click',()=>openSheet('shop'));
 $('missionB').addEventListener('click',()=>openSheet('mission'));
 $('attB').addEventListener('click',()=>openSheet('attend'));
+$('passB').addEventListener('click',()=>openSheet('pass'));
 $('sumB').addEventListener('click',()=>{lastPull=null;openSheet('summon');});
 $('setL').addEventListener('click',()=>openSheet('settings'));
 $('clsB').addEventListener('click',()=>{heroSel=null;openSheet('hero');});
@@ -2257,7 +2332,7 @@ function sfx(name){
   try{SFX[name]&&SFX[name](t);}catch(e){}
 }
 addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('button');
-  if(b&&!['atk','roll','swap','sfxL','skill'].includes(b.id)&&!['buy','up','claim','skill','claimP','claimB','acc2','wup','eup','skinbuy','potbuy','pot','stage','pull','starup','hunlock','refine','psel','plvup','attget'].includes(b.dataset.act))sfx('ui');},true);
+  if(b&&!['atk','roll','swap','sfxL','skill'].includes(b.id)&&!['buy','up','claim','skill','claimP','claimB','acc2','wup','eup','skinbuy','potbuy','pot','stage','pull','starup','hunlock','refine','psel','plvup','attget','passget','rushgo','pclaim'].includes(b.dataset.act))sfx('ui');},true);
 $('musB').addEventListener('click',()=>setMusic(!musicOn));
 
 document.addEventListener('visibilitychange',()=>{if(!actx)return;if(document.hidden)actx.suspend();else if(musicOn||sfxOn)actx.resume();});
