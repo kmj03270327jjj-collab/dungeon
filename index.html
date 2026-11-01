@@ -1302,12 +1302,12 @@ const SKFX={
   r0(W,K){const t=nearest(P.x,P.y,150);if(!t){P.skCd=1;return;}const dx=t.x-P.x,dy=t.y-P.y,l=Math.hypot(dx,dy)||1;burst(P.x,P.y-5,12,'#8a6ad8',60);
     const ox=P.x,oy=P.y;P.x=t.x+dx/l*14;P.y=t.y+dy/l*14;if(collides(P)){P.x=ox;P.y=oy;}P.fx=-dx/l;P.fy=-dy/l;P.sa=Math.atan2(P.fy,P.fx);P.inv=Math.max(P.inv,.35);
     burst(P.x,P.y-5,12,'#8a6ad8',60);sfx('swap');hitEnemy(t,roll(W,CLASSES.rog.base,CLASSES.rog.spread,K.coef,K.pen,1),t.x-P.x,t.y-P.y,80);P.swing=P.swMax=.1;P.wk='dagger';hitStop=.06;},
-  r1(W,K,ax,ay,pt){const x=pt?pt.x:P.x+ax*40,y=pt?pt.y:P.y+ay*40;clouds.push({x,y,t:4,r:30,acc:.5,W});sfx('fire');},
+  r1(W,K,ax,ay,pt){const tg=pt?null:nearest(P.x,P.y,150,null,true),x=pt?pt.x:tg?tg.x:P.x+ax*40,y=pt?pt.y:tg?tg.y:P.y+ay*40;clouds.push({x,y,t:4,r:30,acc:.5,W});sfx('fire');},
   r2(){P.whirl=2;P.wA=0;sfx('boomer');},
   r3(W,K,ax,ay){projs.push({x:P.x+ax*4,y:P.y+ay*4,vx:ax*300,vy:ay*300,t:.6,kind:'mbolt',cls:'rog',coef:K.coef,pen:K.pen,hit:[],W,col:'#e8e8f0',mark:1});sfx('bow');},
   m0(W,K){for(let k=0;k<2;k++)minions.push(mkMinion('spirit',K.coef,8));sfx('star');},
   m1(W,K){for(let k=0;k<3;k++)minions.push(mkMinion('wolf',K.coef,6,K.pen));sfx('boomer');},
-  m2(W,K,ax,ay,pt){const x=pt?pt.x:P.x+ax*50,y=pt?pt.y:P.y+ay*50,g=minions.find(m=>m.kind==='golem');if(g){g.x=x;g.y=y;g.slam=.3;}
+  m2(W,K,ax,ay,pt){const tg=pt?null:nearest(P.x,P.y,150,null,true),x=pt?pt.x:tg?tg.x:P.x+ax*50,y=pt?pt.y:tg?tg.y:P.y+ay*50,g=minions.find(m=>m.kind==='golem');if(g){g.x=x;g.y=y;g.slam=.3;}
     rings.push({x,y,t:.3,rad:30,c:'200,170,120'});burst(x,y-3,14,'#a88a5a',70);shake=Math.max(shake,4);sfx('hammer');
     for(const e of liveIn(x,y,30)){hitEnemy(e,roll(W,CLASSES.sum.base,CLASSES.sum.spread,K.coef,K.pen),e.x-x,e.y-y,150);if(e.hp>0)e.stun=1.5;}},
   m3(W,K,ax,ay){projs.push({x:P.x+ax*6,y:P.y+ay*6,vx:ax*200,vy:ay*200,t:1,kind:'gale',cls:'sum',coef:K.coef,pen:K.pen,hit:[],W,phx:1});sfx('fire');},
@@ -1373,7 +1373,7 @@ function updateSkills(dt){
 function mkMinion(kind,coef,life,pen){return{kind,x:P.x,y:P.y-8,ang:Math.random()*6.28,cd:Math.random()*.5,coef,life,pen:pen||0,mode:'idle'};}
 function setupMinions(){minions=[];if(!ST||ST.cls!=='sum')return;const base=({m0:['spirit','spirit'],m1:['wolf','wolf'],m2:['golem','spirit'],m3:['bird','bird']}[ST.main.id]||['spirit','spirit']).slice();
   if(ST.six==='sum')base.push(base[base.length-1]);const CO={spirit:.55,wolf:.75,golem:.9,bird:.5};base.forEach(k=>minions.push(mkMinion(k,CO[k])));}
-function updateMinions(dt){if(!ST||ST.cls!=='sum'){minions=[];return;}const C=CLASSES.sum,W=ST.main;
+function updateMinions(dt){if(!ST||ST.cls!=='sum')minions=[];const C=CLASSES.sum,W=ST.main;
   for(const m of minions){if(m.life!==undefined){m.life-=dt;if(m.life<=0){m.dead=true;burst(m.x,m.y,5,'#9ff0ff',30);continue;}}
     m.cd-=dt;m.ang+=dt*(m.kind==='bird'?3:2);
     if(m.kind==='spirit'||m.kind==='bird'){const R=m.kind==='bird'?22:16,tx=P.x+Math.cos(m.ang)*R,ty=P.y-8+Math.sin(m.ang)*R*.6;m.x+=(tx-m.x)*Math.min(1,dt*10);m.y+=(ty-m.y)*Math.min(1,dt*10);
@@ -1440,7 +1440,7 @@ function findStage(id){for(const c of STORY)if(c.stages){const s2=c.stages.find(
 function dunOpen(mi){const c=STORY.find(o=>o.map===mi&&o.stages);return !!(c&&c.stages.every(x=>S.story[x.id]));}
 function stageOpen(id){const [c,s2]=findStage(id);if(!c)return false;const i=c.stages.indexOf(s2);return i===0?(c.ch===1||STORY.some(o=>o.ch===c.ch-1&&o.stages&&o.stages.every(x=>S.story[x.id]))):!!S.story[c.stages[i-1].id];}
 function startStage(id){const [c,st]=findStage(id);if(!st)return;
-  closeSheet();lobby.classList.add('hide');ov.classList.add('hide');resetGame();story=st;const pg=(S.sprog||{})[st.id];storyF=pg?pg.f:0;storyT=pg?pg.t:0;pendGold=0;pendXP={};inc('runs');
+  closeSheet();lobby.classList.add('hide');ov.classList.add('hide');resetGame();story=st;if(S.sprog)delete S.sprog[st.id];storyF=0;storyT=0;pendGold=0;pendXP={};inc('runs');
   if(storyF===0&&st.pre&&!S.talked.includes(st.id+'a')){S.talked.push(st.id+'a');save();setMap(c.map,st.lays[0]);showDialog(st.pre,storyRoom);}else storyRoom();}
 function storyRoom(){const st=story,[c]=findStage(st.id),f=storyF;wave=st.lv+Math.floor(f/2);setMap(c.map,st.lays[f]);doorOpen=false;buildFlow();
   storyR=0;roundWait=0;st.rooms[f][0].forEach(t=>spawn(t));
@@ -1450,11 +1450,10 @@ function storyRoom(){const st=story,[c]=findStage(st.id),f=storyF;wave=st.lv+Mat
 function flushXP(){PT.forEach((m,i)=>{const a=pendXP[m.id]||0;if(!a)return;const ups=gainXP(m.id,a);
   if(ups){const nst=stats(m.id),dh=nst.hp-m.st.hp;m.st=nst;if(i===PI){ST=nst;P.max+=dh;P.hp+=dh;nums.push({x:P.x,y:P.y-26,v:'LEVEL UP!',t:1.3,c:'#f6d38e'});sfx('up');}else{m.max+=dh;m.hp+=dh;}faceKey='';}});pendXP={};}
 function bankFloor(){const g=pendGold;S.gold+=g;S.st.goldEarned+=g;inc('gold',g);pendGold=0;flushXP();save();return g;}
-function storyNext(){heroXP(8*wave,true);const g=bankFloor();
-  if(storyF>=4){stageClear();return;}
-  storyF++;S.sprog[story.id]={f:storyF,t:storyT};save();state='fchoice';sfx('door');
-  showOv(`${storyF}층 클리어!`,`이번 층 보상: 골드 ${g}, 경험치\n로비로 나가도 다음에 ${storyF+1}층부터 이어할 수 있어요.`,'이어하기',()=>{
-    P.x=LW/2;P.y=LH-40;P.vx=P.vy=0;P.fx=0;P.fy=-1;parts=[];nums=[];projs=[];rings=[];bolts=[];eprojs=[];drops=[];clouds=[];eclouds=[];fade=.45;setupMinions();storyRoom();},'로비로',showLobby);}
+function storyNext(){heroXP(8*wave,true);
+  if(storyF>=4){bankFloor();stageClear();return;}
+  storyF++;sfx('floor');
+  P.x=LW/2;P.y=LH-40;P.vx=P.vy=0;P.fx=0;P.fy=-1;parts=[];nums=[];projs=[];rings=[];bolts=[];eprojs=[];drops=[];clouds=[];eclouds=[];fade=.45;setupMinions();storyRoom();}
 function stageClear(){const st=story,[c]=findStage(st.id);state='sclear';
   let tot=0,mx=0;PT.forEach((m,i)=>{const hp=i===PI?P.hp:m.hp,mm=i===PI?P.max:m.max;mx+=mm;if(m.alive)tot+=Math.max(0,hp);});
   const sHp=tot/mx>=.5,sT=storyT<=st.time,stars=1+(sHp?1:0)+(sT?1:0),prev=S.story[st.id]||0,first=!prev;
@@ -1530,7 +1529,7 @@ function update(dt){
   }
   if(state==='transit'){timer-=dt;if(timer<=0&&story){fade=.45;storyNext();}else if(timer<=0){heroXP(10*wave,true);wave++;inc('floors');P.x=LW/2;P.y=LH-40;P.vx=P.vy=0;P.fx=0;P.fy=-1;parts=[];nums=[];projs=[];rings=[];bolts=[];eprojs=[];drops=[];clouds=[];eclouds=[];fade=.45;setupMinions();if(Math.random()<BOON_P&&boonPool().length>=3)openBoon();else startWave();}}
   if(state==='dying'){timer-=dt;if(timer<=0){state='dead';const g=runGold;bank();
-    if(story){pendGold=0;pendXP={};showOv('스테이지 실패',`${story.id} ${storyF+1}층에서 파티가 모두 쓰러졌어요.\n이번 층의 진행과 보상은 사라졌어요.\n다시 도전하면 ${storyF+1}층부터 시작해요.`,'다시 도전',restart,'로비로',showLobby);}else showOv('쓰러졌어요',`${wave}층까지 내려갔어요. 슬라임 ${runKills}마리를 잡고 골드 ${g}을 챙겼어요.`,'다시 도전',restart,'로비로',showLobby);}}
+    if(story){pendGold=0;pendXP={};showOv('스테이지 실패',`${story.id} ${storyF+1}층에서 파티가 모두 쓰러졌어요.\n이번 스테이지의 진행과 보상은 사라졌어요.\n다시 도전하면 1층부터 시작해요.`,'다시 도전',restart,'로비로',showLobby);}else showOv('쓰러졌어요',`${wave}층까지 내려갔어요. 슬라임 ${runKills}마리를 잡고 골드 ${g}을 챙겼어요.`,'다시 도전',restart,'로비로',showLobby);}}
   for(const p of parts){p.t-=dt;p.x+=p.vx*dt;p.y+=p.vy*dt;p.vy+=120*dt;p.vx*=.96;}
   parts=parts.filter(p=>p.t>0);
   for(const n of nums){n.t-=dt;n.y-=18*dt;}
@@ -1758,7 +1757,7 @@ function showOv(t,s,b,fn,b2,fn2){$('ovT').textContent=t;$('ovS').textContent=s;$
 $('ovB').addEventListener('click',()=>{ov.classList.add('hide');const f=ovFn;ovFn=null;if(f)f();});
 $('ovB2').addEventListener('click',()=>{ov.classList.add('hide');const f=ovFn2;ovFn2=null;if(f)f();});
 function pause(){if(state!=='play'&&state!=='open')return;prevState=state;state='paused';atkBtn=false;
-  showOv('일시정지',story?`지금 로비로 나가면 이번 층(${storyF+1}층)의 진행과 보상(골드 ${pendGold})이 사라져요.\n이미 깬 층은 저장돼 있어요.`:'','계속하기',()=>{state=prevState;last=performance.now();},'로비로',()=>{bank();showLobby();});}
+  showOv('일시정지',story?`지금 로비로 나가면 이번 스테이지(${story.id}, 지금 ${storyF+1}층)의 진행과 보상(골드 ${pendGold})이 모두 사라져요.\n다음에 1층부터 다시 시작해요.`:'','계속하기',()=>{state=prevState;last=performance.now();},'로비로',()=>{bank();showLobby();});}
 $('pauseB').addEventListener('click',pause);
 let faceKey='';
 function renderFaces(){const f=$('faces');if(!PT.length||!lobby.classList.contains('hide')){if(faceKey!=='x'){f.innerHTML='';faceKey='x';}return;}
@@ -1823,7 +1822,7 @@ const inPool=id=>!!S.heroes[id]||!STORY_LOCK[id]||!!S.story[STORY_LOCK[id]];
 const ACC_G={c1:'c',c2:'c',c4:'r',c3:'e'},ACC_P=.25,DUST={c:10,r:20,e:40,l:80};
 function rollGrade(){const r=Math.random();return r<GRADES.l.rate?'l':r<GRADES.l.rate+GRADES.e.rate?'e':r<GRADES.l.rate+GRADES.e.rate+GRADES.r.rate?'r':'c';}
 const EPULL1=15,EPULL10=135;
-const HERO_RATE={c:.035,r:.018,e:.006,l:.001},FRAG_RATE={c:.45,r:.30,e:.18,l:.07},FRAG_N={c:5,r:4,e:3,l:2},DUP_N={c:10,r:15,e:25,l:40};
+const HERO_RATE={c:.035,r:.018,e:.006,l:.001},FRAG_RATE={c:.45,r:.30,e:.18,l:.07},FRAG_N={c:10,r:10,e:10,l:10},DUP_N={c:10,r:15,e:25,l:40};
 function pullOne(kind){
   if(kind==='eq'){const order=['l','e','r','c'];let gi=order.indexOf(rollGrade()),pool=[];
     while(gi<order.length){pool=Object.keys(ACC_G).filter(k=>ACC_G[k]===order[gi]);if(pool.length)break;gi++;}
