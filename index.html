@@ -483,7 +483,7 @@ const ITEMS={
   b3:{slot:'w',cls:'arc',tier:4,name:'바람의 활',desc:'관통 화살 3발을 부채꼴로 발사',atk:2,fan:1,up:'+4에서 5발',price:[28,'j'],blade:'#9fe0c0'},
   s0:{slot:'w',cls:'mag',tier:1,name:'견습 지팡이',desc:'폭발하는 화염구',atk:0,blade:'#e86a3a'},
   s1:{slot:'w',cls:'mag',tier:2,name:'얼음 지팡이',desc:'빠른 얼음 조각 (계수 60%), 맞은 적이 느려짐',atk:0,ice:1,up:'강화할수록 느려지는 시간 증가',price:[300,'g'],blade:'#9fe8ff'},
-  s2:{slot:'w',cls:'mag',tier:3,name:'번개 홀',desc:'번개가 즉시 적 사이를 튀어다님 (계수 80%)',atk:2,chain:1,up:'+2, +4에서 튀는 횟수 증가',price:[900,'g'],blade:'#ffe45a'},
+  s2:{slot:'w',cls:'mag',tier:3,name:'번개 홀',desc:'번개가 즉시 적 사이를 튀어다님 (계수 65%)',atk:2,chain:1,up:'+2, +4에서 튀는 횟수 증가',price:[900,'g'],blade:'#ffe45a'},
   s3:{slot:'w',cls:'mag',tier:4,name:'별의 지팡이',desc:'적을 따라가는 별 3개 (각 계수 55%)',atk:2,star:1,up:'+2, +4에서 별 1개 추가',price:[30,'j'],blade:'#b8a8ff'},
   r0:{slot:'w',cls:'rog',tier:1,name:'그림자 단검',desc:'빠른 연타, 빈틈이나 등 뒤를 치면 치명타율 +40%',atk:0,cd:.22,blade:'#b8a8d8'},
   r1:{slot:'w',cls:'rog',tier:2,name:'독 단검',desc:'맞은 적을 3초 동안 중독',atk:2,psn:1,cd:.22,blade:'#8fe06a'},
@@ -492,7 +492,7 @@ const ITEMS={
   m0:{slot:'w',cls:'sum',tier:1,name:'정령 구슬',desc:'정령 2마리가 함께 싸워요',atk:0,blade:'#9ff0ff'},
   m1:{slot:'w',cls:'sum',tier:2,name:'늑대 피리',desc:'늑대 2마리가 적에게 달려들어요',atk:2,blade:'#c8ccd4'},
   m2:{slot:'w',cls:'sum',tier:3,name:'대지의 핵',desc:'골렘과 정령이 함께 싸워요. 골렘은 주변을 내려찍어요',atk:3,blade:'#c9a46a'},
-  m3:{slot:'w',cls:'sum',tier:4,name:'불새 깃털',desc:'불새 2마리가 터지는 불꽃을 쏴요',atk:5,blade:'#ff9a3a'},
+  m3:{slot:'w',cls:'sum',tier:4,name:'불새 깃털',desc:'불새가 크게 터지는 불꽃을 쏴요',atk:7,blade:'#ff9a3a'},
   d0:{slot:'x',tier:1,name:'단검',desc:'빠른 찌르기, 치명타 피해 +40%',cdmg:.4,kind:'dagger',base:6,spread:3,cd:.2,blade:'#cfd6de'},
   d1:{slot:'x',tier:2,name:'창',desc:'길게 찔러 일렬로 관통',kind:'spear',base:11,spread:4,cd:.5,price:[350,'g'],blade:'#b0b8c4'},
   d2:{slot:'x',tier:3,name:'전투 망치',desc:'주변을 내려찍고 적을 기절시킴',kind:'hammer',base:16,spread:6,cd:.9,up:'강화할수록 기절 시간 증가',price:[700,'g'],blade:'#8a8f98'},
@@ -616,7 +616,7 @@ const SKILLS={
   b3:{name:'폭풍 화살',aim:'dir',desc:'적을 밀어내며 관통하는 거대 화살',coef:2.5,pen:12,cd:12,cost:[20,'j'],req:{k:'bestArc',n:8,txt:'궁수로 8층 도달'}},
   s0:{name:'화염 고리',desc:'내 주변 폭발',coef:1.6,pen:4,cd:6,cost:[300,'g']},
   s1:{name:'눈보라',desc:'주변 적을 2초 동안 얼려 멈춤',coef:1,pen:4,cd:9,cost:[600,'g']},
-  s2:{name:'낙뢰',desc:'가까운 적 최대 5마리에 번개',coef:1.8,pen:8,cd:11,cost:[1500,'g'],req:{k:'kBat',n:40,txt:'박쥐 40마리 처치'}},
+  s2:{name:'낙뢰',desc:'가까운 적 최대 4마리에 번개',coef:1.5,pen:8,cd:12,cost:[1500,'g'],req:{k:'kBat',n:40,txt:'박쥐 40마리 처치'}},
   s3:{name:'유성우',aim:'pt',desc:'적 위로 유성 8개 낙하',coef:1.2,pen:6,cd:14,cost:[20,'j'],req:{k:'bestMag',n:10,txt:'마법사로 10층 도달'}},
   r0:{name:'그림자 이동',desc:'가장 가까운 적 뒤로 순간이동해 확정 치명타',coef:2,pen:6,cd:7},
   r1:{name:'독안개',aim:'pt',desc:'4초 동안 독 구름, 안의 적에게 지속 피해와 중독',coef:.3,pen:2,cd:10},
@@ -625,7 +625,7 @@ const SKILLS={
   m0:{name:'정령 추가 소환',desc:'8초 동안 정령 2마리 추가',coef:.55,pen:0,cd:12},
   m1:{name:'늑대 무리',desc:'6초 동안 늑대 3마리 추가',coef:.9,pen:6,cd:12},
   m2:{name:'골렘 강타',aim:'pt',desc:'골렘이 지정 위치로 뛰어 내려찍고 기절',coef:2,pen:12,cd:12,req:{k:'kKnight',n:20,txt:'갑옷 기사 20마리 처치'}},
-  m3:{name:'불새 강림',aim:'dir',desc:'적을 밀어내며 관통하는 거대 불새',coef:2.2,pen:10,cd:12},
+  m3:{name:'불새 강림',aim:'dir',desc:'벽과 적을 꼿뚫고 날아가는 거대 불새',coef:2.9,pen:12,cd:11},
 };
 const reqVal=K=>K.req?(S.st[K.req.k]||0):0;
 const reqMet=K=>!K.req||reqVal(K)>=K.req.n;
@@ -692,7 +692,7 @@ const CLASSES={
   arc:{name:'궁수',unlock:'스토리 1-6 클리어 또는 영혼 소환',grade:'r',six:'연속 사격: 일반 공격 화살이 1발 더 나감',hpBase:60,desc:'멀리서 화살, 빠름',style:'화살',hp:-15,spd:.12,aim:125,base:7,spread:4},
   mag:{name:'마법사',unlock:'스토리 1-12 클리어 또는 영혼 소환',grade:'r',six:'마력 폭주: 스킬 쿨타임 25% 감소',hpBase:52,desc:'폭발 화염구, 약한 몸',style:'화염구 폭발',hp:-25,spd:0,aim:115,base:12,spread:5},
   rog:{name:'도적',unlock:'영웅 소환으로 얻어요',grade:'r',six:'그림자 습격: 빈틈이나 등 뒤를 치면 치명타율 +30% 추가',hpBase:60,desc:'빠른 단검, 뒤치기 치명타',style:'단검 연타',hp:-20,spd:.18,aim:64,base:7,spread:3},
-  sum:{name:'소환사',unlock:'영웅 소환으로 얻어요',grade:'e',six:'정령 군단: 소환수가 1마리 더',hpBase:50,desc:'소환수가 대신 싸움, 약한 몸',style:'정령 소환',hp:-25,spd:0,aim:110,base:5,spread:3},
+  sum:{name:'소환사',unlock:'영웅 소환으로 얻어요',grade:'e',six:'정령 각성: 소환수 피해 +40%, 공격 속도 +25%, 금빛 오라 (별 1개마다 소환수 1마리 추가)',hpBase:50,desc:'소환수가 대신 싸움, 약한 몸',style:'정령 소환',hp:-25,spd:0,aim:110,base:5,spread:3},
 };
 /* ---------- 저장 ---------- */
 const OPT={music:true,sfx:true,mv:.6,sv:.7,aim:true,shake:true,dmg:true};
@@ -817,6 +817,7 @@ const RUSH_SEQ=[{type:'king',map:0},{type:'queen',map:1},{type:'king',map:0,emp:
 const rushName=f=>{const B=RUSH_SEQ[(f-1)%RUSH_SEQ.length];return B.emp?'슬라임 황제':ETYPES[B.type].name;};
 function rushRw(f){return f===1?[[20,'j'],[2,'box']]:f===2?[[30,'j'],[2,'ebox']]:f===3?[[40,'j'],[3,'box']]:f===4?[[50,'j'],[3,'ebox']]:[[60+10*(f-5),'j'],[4,'box'],[2,'ebox']];}
 const RUSH_DAY=2,RUSH_TIME=240;
+const rushToday=()=>{if(!S.br||S.br.key!==dayKey())S.br={key:dayKey(),used:0};if(!S.br.rw)S.br.rw=[];return S.br.rw;};
 const brLeft=()=>RUSH_DAY-(S.br&&S.br.key===dayKey()?S.br.used:0);
 const PASS=[[[2,'box']],[[30,'j']],[[1,'pm']],[[2,'ebox']],[[3,'box']],[[40,'j']],[[2,'pm']],[[3,'ebox']],[[4,'box']],[[50,'j']],
   [[1,'pl']],[[4,'ebox']],[[5,'box']],[[60,'j']],[[2,'pl']],[[5,'ebox']],[[6,'box']],[[80,'j']],[[6,'ebox']],[[100,'j'],[10,'box']]];
@@ -1253,8 +1254,8 @@ function tryAttack(){
     if(W.ice){P.atkCd=.38;sfx('ice');projs.push({x:P.x+ax*4,y:P.y+ay*4,vx:ax*210,vy:ay*210,t:.8,kind:'ice',hit:[],W});return;}
     if(W.chain){
       const t0=nearest(P.x,P.y,115,null,true);if(!t0){P.atkCd=.15;return;}
-      P.atkCd=.7;sfx('zap');const pts=[[P.x+ax*4,P.y-8]],hitL=[],jumps=2+Math.floor(lv/2);let cur=t0;
-      for(let k=0;k<=jumps&&cur;k++){hitL.push(cur);pts.push([cur.x,cur.y-4]);hitEnemy(cur,clsRoll('mag',W,.8),cur.x-P.x,cur.y-P.y,40);cur=nearest(cur.x,cur.y,52,hitL,true);}
+      P.atkCd=.8;sfx('zap');const pts=[[P.x+ax*4,P.y-8]],hitL=[],jumps=1+Math.floor(lv/2);let cur=t0;
+      for(let k=0;k<=jumps&&cur;k++){hitL.push(cur);pts.push([cur.x,cur.y-4]);hitEnemy(cur,clsRoll('mag',W,.65),cur.x-P.x,cur.y-P.y,40);cur=nearest(cur.x,cur.y,52,hitL,true);}
       bolts.push({pts,t:.18});hitStop=Math.max(hitStop,.03);enemies=enemies.filter(e=>e.hp>0);return;}
     if(W.star){P.atkCd=.9;sfx('star');const n=3+(lv>=2?1:0)+(lv>=4?1:0);
       for(let i=0;i<n;i++){const an=P.sa+(i-(n-1)/2)*.5;projs.push({x:P.x,y:P.y,vx:Math.cos(an)*110,vy:Math.sin(an)*110,t:2,kind:'star',hit:[],W});}
@@ -1296,7 +1297,7 @@ function doSwap(){const n=PT.length;for(let k=1;k<n;k++){const i=(PI+k)%n;if(PT[
 function swapHero(i,forced){
   if(state!=='play'&&state!=='open')return;if(i===PI||!PT[i]||!PT[i].alive)return;if(!forced&&P.heroCd>0)return;
   const cur=PT[PI];cur.hp=Math.max(0,P.hp);cur.max=P.max;cur.skCd=P.skCd;
-  PI=i;const n=PT[i];ST=n.st;setupMinions();P.hp=n.hp;P.max=n.max;P.skCd=n.skCd;P.inv=Math.max(P.inv,forced?1.5:.4);if(!forced)P.heroCd=10;
+  PI=i;const n=PT[i];ST=n.st;P.swim=ST.swim;setupMinions();P.hp=n.hp;P.max=n.max;P.skCd=n.skCd;P.inv=Math.max(P.inv,forced?1.5:.4);if(!forced)P.heroCd=10;
   P.storm=0;P.burst=null;P.charge=null;P.swing=0;P.atkCd=.15;P.full=0;P.wide=false;P.wk=ST.cls==='arc'?'bow':ST.cls==='mag'?'staff':'sword';
   burst(P.x,P.y-6,14,'#f6d38e',60);rings.push({x:P.x,y:P.y,t:.25,rad:20,c:'246,211,142'});sfx('swap');inc('heroSwap');
   if(!forced)say(`${CLASSES[n.id].name} 등장!`,1.2);faceKey='';}
@@ -1328,7 +1329,7 @@ function updateProjs(dt){
       if(tg){const dx=tg.x-q.x,dy=tg.y-q.y,d=Math.hypot(dx,dy)||1,k=Math.min(1,dt*5);q.vx+=(dx/d*160-q.vx)*k;q.vy+=(dy/d*160-q.vy)*k;}
       if(Math.random()<.5)parts.push({x:q.x,y:q.y-5,vx:0,vy:0,t:.25,c:'#d8ccff',s:1});}
     const nx=q.x+q.vx*dt,ny=q.y+q.vy*dt;
-    if(solid(Math.floor(nx/T),Math.floor(ny/T))){q.dead=true;
+    if(!q.phx&&solid(Math.floor(nx/T),Math.floor(ny/T))){q.dead=true;
       if(q.kind==='fire')explode(q.x,q.y,24,q.W);else burst(q.x,q.y-5,3,q.kind==='ice'?'#bfefff':'#c9b28a',30);continue;}
     q.dist=(q.dist||0)+Math.hypot(nx-q.x,ny-q.y);q.x=nx;q.y=ny;
     for(const e of enemies){if(e.state==='spawn'||e.hp<=0||q.hit.includes(e))continue;
@@ -1390,7 +1391,7 @@ const SKFX={
   s0(W,K){explode(P.x,P.y,36,W,K.coef,K.pen);},
   s1(W,K){rings.push({x:P.x,y:P.y,t:.25,rad:50,c:'170,230,255'});burst(P.x,P.y-5,20,'#bfefff',90);sfx('ice');
     for(const e of liveIn(P.x,P.y,50)){hitEnemy(e,skRoll('mag',W,K),e.x-P.x,e.y-P.y,30);if(e.hp>0){e.stun=2;e.slow=3;}}},
-  s2(W,K){const ts=liveIn(P.x,P.y,140).sort((a,b)=>Math.hypot(a.x-P.x,a.y-P.y)-Math.hypot(b.x-P.x,b.y-P.y)).slice(0,5);
+  s2(W,K){const ts=liveIn(P.x,P.y,140).sort((a,b)=>Math.hypot(a.x-P.x,a.y-P.y)-Math.hypot(b.x-P.x,b.y-P.y)).slice(0,4);
     for(const e of ts){bolts.push({pts:[[e.x+(Math.random()-.5)*16,e.y-80],[e.x+(Math.random()-.5)*10,e.y-40],[e.x,e.y-4]],t:.25});hitEnemy(e,skRoll('mag',W,K),0,1,40);}
     sfx('zap');shake=Math.max(shake,2.5);if(!ts.length)P.skCd=1;},
   s3(W,K,ax,ay,pt){const al=enemies.filter(e=>e.state!=='spawn'&&e.hp>0);
@@ -1429,24 +1430,25 @@ function updateSkills(dt){
 }
 function mkMinion(kind,coef,life,pen){return{kind,x:P.x,y:P.y-8,ang:Math.random()*6.28,cd:Math.random()*.5,coef,life,pen:pen||0,mode:'idle'};}
 function setupMinions(){minions=[];if(!ST||ST.cls!=='sum')return;const base=({m0:['spirit','spirit'],m1:['wolf','wolf'],m2:['golem','spirit'],m3:['bird','bird']}[ST.main.id]||['spirit','spirit']).slice();
-  if(ST.six==='sum')base.push(base[base.length-1]);const CO={spirit:.55,wolf:.75,golem:.9,bird:.5};base.forEach(k=>minions.push(mkMinion(k,CO[k])));}
+  for(let k=1;k<(ST.star||1);k++)base.push(base[base.length-1]);const CO={spirit:.55,wolf:.75,golem:.9,bird:.7},aw=ST.six==='sum';
+  base.forEach((k,i)=>{const m=mkMinion(k,CO[k]*(aw?1.4:1));m.aw=aw;m.ang=i*6.283/base.length;minions.push(m);});}
 function updateMinions(dt){if(!ST||ST.cls!=='sum')minions=[];const C=CLASSES.sum,W=ST.main;
   for(const m of minions){if(m.life!==undefined){m.life-=dt;if(m.life<=0){m.dead=true;burst(m.x,m.y,5,'#9ff0ff',30);continue;}}
     m.cd-=dt;m.ang+=dt*(m.kind==='bird'?3:2);
     if(m.kind==='spirit'||m.kind==='bird'){const R=m.kind==='bird'?22:16,tx=P.x+Math.cos(m.ang)*R,ty=P.y-8+Math.sin(m.ang)*R*.6;m.x+=(tx-m.x)*Math.min(1,dt*10);m.y+=(ty-m.y)*Math.min(1,dt*10);
       if(m.cd<=0){const t=nearest(m.x,m.y+6,115);if(t){const dx=t.x-m.x,dy=t.y-5-m.y,l=Math.hypot(dx,dy)||1;
-        projs.push({x:m.x,y:m.y+5,vx:dx/l*190,vy:dy/l*190,t:.8,kind:'mbolt',cls:'sum',coef:m.coef,pen:m.pen,hit:[],W,col:m.kind==='bird'?'#ff9a3a':'#9ff0ff',boom:m.kind==='bird'?14:0});m.cd=m.kind==='bird'?1:.8;}}}
+        projs.push({x:m.x,y:m.y+5,vx:dx/l*190,vy:dy/l*190,t:.8,kind:'mbolt',cls:'sum',coef:m.coef,pen:m.pen,hit:[],W,col:m.kind==='bird'?'#ff9a3a':'#9ff0ff',boom:m.kind==='bird'?18:0,aw:m.aw});m.cd=(m.kind==='bird'?.85:.8)*(m.aw?.8:1);}}}
     else if(m.kind==='wolf'){
       if(m.mode==='idle'){const ox=P.x+Math.cos(m.ang)*14,oy=P.y+Math.sin(m.ang)*8;m.x+=(ox-m.x)*Math.min(1,dt*6);m.y+=(oy-m.y)*Math.min(1,dt*6);
         if(m.cd<=0){const t=nearest(m.x,m.y,105);if(t){m.tgt=t;m.mode='dash';}}}
       else if(m.mode==='dash'){const t=m.tgt;if(!t||t.hp<=0||!enemies.includes(t))m.mode='back';
-        else{const dx=t.x-m.x,dy=t.y-m.y,l=Math.hypot(dx,dy)||1;if(l<t.r+4){hitEnemy(t,roll(W,C.base,C.spread,m.coef,m.pen),dx,dy,60);m.mode='back';m.cd=1.1;}
+        else{const dx=t.x-m.x,dy=t.y-m.y,l=Math.hypot(dx,dy)||1;if(l<t.r+4){hitEnemy(t,roll(W,C.base,C.spread,m.coef,m.pen),dx,dy,60);m.mode='back';m.cd=1.1*(m.aw?.8:1);}
           else{const st=Math.min(220*dt,l);m.x+=dx/l*st;m.y+=dy/l*st;m.fl=dx<0;}}}
       else{const dx=P.x-m.x,dy=P.y-m.y,l=Math.hypot(dx,dy)||1;if(l<16)m.mode='idle';else{const st=Math.min(220*dt,l);m.x+=dx/l*st;m.y+=dy/l*st;m.fl=dx<0;}}}
     else if(m.kind==='golem'){const tx=P.x-P.fx*14,ty=P.y-P.fy*10,dx=tx-m.x,dy=ty-m.y,l=Math.hypot(dx,dy);if(l>4){const st=Math.min(45*dt,l);m.x+=dx/l*st;m.y+=dy/l*st;}
       if(m.slam>0)m.slam-=dt;
       if(m.cd<=0){const t=nearest(m.x,m.y,30);if(t){for(const e of liveIn(m.x,m.y,24))hitEnemy(e,roll(W,C.base,C.spread,m.coef,m.pen),e.x-m.x,e.y-m.y,120);
-        rings.push({x:m.x,y:m.y,t:.25,rad:24,c:'200,170,120'});shake=Math.max(shake,1.5);sfx('hammer');m.cd=1.4;m.slam=.2;}}}}
+        rings.push({x:m.x,y:m.y,t:.25,rad:24,c:'200,170,120'});shake=Math.max(shake,1.5);sfx('hammer');m.cd=1.4*(m.aw?.8:1);m.slam=.2;}}}}
   minions=minions.filter(m=>!m.dead);enemies=enemies.filter(e=>e.hp>0);
   for(const c of clouds){c.t-=dt;c.acc+=dt;if(c.acc>=.5){c.acc=0;const C2=CLASSES.rog;for(const e of liveIn(c.x,c.y,c.r)){hitEnemy(e,roll(c.W,C2.base,C2.spread,.3,2),0,0,0);
     if(e.hp>0)e.psn={t:3,d:Math.max(1,Math.round((C2.base+wAtk(c.W))*.25))};}}if(Math.random()<.4)parts.push({x:c.x+(Math.random()-.5)*c.r*1.6,y:c.y+(Math.random()-.5)*c.r,vx:0,vy:-8,t:.5,c:'#8fe06a',s:1});}
@@ -1587,7 +1589,9 @@ function update(dt){
       if(!roundWait){roundWait=1.2;say(`라운드 ${storyR+2}/${story.rooms[storyF].length}`,1.6);sfx('floor');}
       else{roundWait-=dt;if(roundWait<=0){roundWait=0;storyR++;story.rooms[storyF][storyR].forEach(t=>spawn(t));}}}
     else if(state==='play'&&enemies.length===0){state='open';doorOpen=true;sfx('door');inc('rooms');
-      if(rush&&!rush.got.includes(rush.f)){rush.got.push(rush.f);const rw=rushRw(rush.f);rw.forEach(grant);S.st.bossBest=Math.max(S.st.bossBest||0,rush.f);save();say(`${rush.f}층 돌파! ${rw.map(rewTxt).join(', ')}`,3.2);sfx('up');}const h=Math.min(ST.heal+P.b.heal,P.max-P.hp);P.hp+=h;
+      if(rush&&!rush.got.includes(rush.f)){rush.got.push(rush.f);S.st.bossBest=Math.max(S.st.bossBest||0,rush.f);const td=rushToday();
+        if(!td.includes(rush.f)){td.push(rush.f);const rw=rushRw(rush.f);rw.forEach(grant);rush.rw=(rush.rw||[]).concat(rw);say(`${rush.f}층 돌파! ${rw.map(rewTxt).join(', ')}`,3.2);sfx('up');}
+        else say(`${rush.f}층 돌파! (이 층 보상은 오늘 이미 받았어요)`,2.6);save();}const h=Math.min(ST.heal+P.b.heal,P.max-P.hp);P.hp+=h;
       PT.forEach((m,i)=>{if(i!==PI&&m.alive)m.hp=Math.min(m.max,m.hp+m.st.heal+P.b.heal);});
       say(h>0?`방 클리어! 체력 +${h}, 위쪽 문으로 가요`:'방 클리어! 위쪽 문으로 가요',3);}
     if(state==='open'&&P.y<26&&Math.abs(P.x-(DOORX*T+8))<15){state='transit';timer=.45;atkBtn=false;sfx('floor');}
@@ -1595,7 +1599,7 @@ function update(dt){
   if(state==='transit'){timer-=dt;if(timer<=0&&story){fade=.45;storyNext();}else if(timer<=0&&rush){rush.f++;fade=.45;PT.forEach((m,i)=>{if(i===PI)P.hp=Math.min(P.max,P.hp+P.max*.2);else if(m.alive)m.hp=Math.min(m.max,m.hp+m.max*.2);});
     P.x=LW/2;P.y=LH-40;P.vx=P.vy=0;P.fx=0;P.fy=-1;parts=[];nums=[];projs=[];rings=[];bolts=[];eprojs=[];drops=[];clouds=[];eclouds=[];setupMinions();rushRoom();}else if(timer<=0){heroXP(10*wave,true);wave++;inc('floors');P.x=LW/2;P.y=LH-40;P.vx=P.vy=0;P.fx=0;P.fy=-1;parts=[];nums=[];projs=[];rings=[];bolts=[];eprojs=[];drops=[];clouds=[];eclouds=[];fade=.45;setupMinions();if(Math.random()<BOON_P&&boonPool().length>=3)openBoon();else startWave();}}
   if(state==='dying'){timer-=dt;if(timer<=0){state='dead';const g=runGold;bank();
-    if(rush){const n=rush.got.length,rw=rush.got.flatMap(f=>rushRw(f));showOv(rush.timeout?'시간 종료':'보스 러시 종료',`${rush.timeout?'제한 시간 4분이 끝났어요.\n':''}${n?`${n}층까지 돌파했어요!`:'1층 보스를 쓰러뜨리지 못했어요.'}\n최고 기록 ${S.st.bossBest||0}층${rw.length?`\n\n받은 보상: ${rw.map(rewTxt).join(', ')}`:''}\n오늘 남은 도전 ${brLeft()}번`,brLeft()>0?'다시 도전':'로비로',brLeft()>0?restart:showLobby,brLeft()>0?'로비로':null,brLeft()>0?showLobby:null);}
+    if(rush){const n=rush.got.length,rw=rush.rw||[];showOv(rush.timeout?'시간 종료':'보스 러시 종료',`${rush.timeout?'제한 시간 4분이 끝났어요.\n':''}${n?`${n}층까지 돌파했어요!`:'1층 보스를 쓰러뜨리지 못했어요.'}\n최고 기록 ${S.st.bossBest||0}층${rw.length?`\n\n받은 보상: ${rw.map(rewTxt).join(', ')}`:''}\n오늘 남은 도전 ${brLeft()}번`,brLeft()>0?'다시 도전':'로비로',brLeft()>0?restart:showLobby,brLeft()>0?'로비로':null,brLeft()>0?showLobby:null);}
     else if(story){pendGold=0;pendXP={};showOv('스테이지 실패',`${story.id} ${storyF+1}층에서 파티가 모두 쓰러졌어요.\n이번 스테이지의 진행과 보상은 사라졌어요.\n다시 도전하면 1층부터 시작해요.`,'다시 도전',restart,'로비로',showLobby);}else showOv('쓰러졌어요',`${wave}층까지 내려갔어요. 슬라임 ${runKills}마리를 잡고 골드 ${g}을 챙겼어요.`,'다시 도전',restart,'로비로',showLobby);}}
   for(const p of parts){p.t-=dt;p.x+=p.vx*dt;p.y+=p.vy*dt;p.vy+=120*dt;p.vx*=.96;}
   parts=parts.filter(p=>p.t>0);
@@ -1795,6 +1799,7 @@ function render(){
     drawLight(ctx,bx,by,10,'140,220,255',.35);ctx.strokeStyle='#9fe8ff';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(bx-Math.cos(pa)*5,by-Math.sin(pa)*5);ctx.lineTo(bx+Math.cos(pa)*5,by+Math.sin(pa)*5);ctx.stroke();}
   for(const c of clouds){ctx.fillStyle=`rgba(110,200,80,${.18+.08*Math.sin(time*6)})`;ctx.beginPath();ctx.ellipse(c.x,c.y,c.r,c.r*.6,0,0,7);ctx.fill();}
   for(const m of minions){
+    if(m.aw){drawLight(ctx,m.x,m.y-2,14,'255,215,110',.35+.12*Math.sin(time*6+m.ang));if(Math.random()<.15)parts.push({x:m.x+(Math.random()-.5)*6,y:m.y,vx:0,vy:-14,t:.4,c:'#ffe08a',s:1});}
     if(m.kind==='spirit'){drawLight(ctx,m.x,m.y,10,'150,240,255',.4);ctx.fillStyle='#9ff0ff';ctx.fillRect(Math.round(m.x)-1,Math.round(m.y)-1,3,3);ctx.fillStyle='#ffffff';ctx.fillRect(Math.round(m.x),Math.round(m.y)-1,1,1);}
     else if(m.kind==='bird'){drawLight(ctx,m.x,m.y,12,'255,150,60',.4);const fl=Math.sin(time*16)>0?1:0;ctx.fillStyle='#ff9a3a';ctx.fillRect(Math.round(m.x)-1,Math.round(m.y)-1,3,2);
       ctx.fillStyle='#ffd36b';ctx.fillRect(Math.round(m.x)-3,Math.round(m.y)-1-fl,2,1);ctx.fillRect(Math.round(m.x)+2,Math.round(m.y)-1-fl,2,1);}
@@ -1926,8 +1931,8 @@ const PANELS={
     if(modeTab==='rush'){const open=!!S.story['1-6'],left=brLeft(),best=S.st.bossBest||0;
       if(!open)return h+`<div class="chap" style="text-align:center;padding:24px 14px"><b style="font-weight:normal;font-size:19px">보스 러시 잠김</b><p class="hint">스토리 1-6 슬라임 왕을 쓰러뜨리면 열려요.</p></div>`;
       return h+`<div class="chap"><h4>보스 러시<small>오늘 남은 도전 ${left} / ${RUSH_DAY}</small></h4>
-        <p class="hint" style="text-align:left;margin:0 0 8px">매 층마다 아주 강력한 보스가 나와요. 층을 돌파할 때마다 보상을 바로 받고, 층 사이에 체력을 20% 회복해요. 제한 시간은 한 판에 4분이에요. 하루 ${RUSH_DAY}번 도전할 수 있어요. 최고 기록 ${best}층</p>
-        <div class="rushl">${[1,2,3,4,5].map(f=>`<div class="rushc ${best>=f?'got':''}"><b>${f}층</b><small>${rushName(f)}</small><div class="ari">${rushRw(f).map(rewIcon).join('')}</div>${best>=f?'<em>✓</em>':''}</div>`).join('')}</div>
+        <p class="hint" style="text-align:left;margin:0 0 8px">매 층마다 아주 강력한 보스가 나와요. 층을 돌파할 때마다 보상을 바로 받고, 층 사이에 체력을 20% 회복해요. 제한 시간은 한 판에 4분이에요. 하루 ${RUSH_DAY}번 도전할 수 있고, <b>층 보상은 매일 초기화</b>돼서 날마다 다시 받을 수 있어요. 최고 기록 ${best}층</p>
+        <div class="rushl">${[1,2,3,4,5].map(f=>`<div class="rushc ${rushToday().includes(f)?'got':''}"><b>${f}층</b><small>${rushName(f)}</small><div class="ari">${rushRw(f).map(rewIcon).join('')}</div>${rushToday().includes(f)?'<em>✓</em>':''}</div>`).join('')}</div>
         <p class="hint">5층 다음부터는 보스가 반복되며 계속 강해지고, 보상도 층마다 늘어나요.</p></div>
         <button class="go" data-act="rushgo" ${left>0?'':'disabled'}>${left>0?'도전하기':'오늘 도전 끝 (내일 다시)'}</button>`;}
     if(!MAPS.some((m,i)=>dunOpen(i)))return h+`<div class="chap" style="text-align:center;padding:24px 14px"><b style="font-weight:normal;font-size:19px">던전 돌파 잠김</b><p class="hint">스토리 1장 지하 감옥을 모두 깨면 지하 감옥 던전이 열려요.<br>각 장을 깰 때마다 그 맵의 던전이 하나씩 열려요.</p></div>`;
