@@ -335,6 +335,12 @@ button.item{cursor:pointer}
 .rh{font-size:12px;color:var(--muted);padding-bottom:4px;border-bottom:1px solid var(--ring)}
 .rr{padding-top:8px;font-size:16px}.rr small{display:block;font-size:11px;color:var(--muted)}
 .rn{font-size:12px;color:var(--muted);text-align:center;padding:2px 0 6px;border-bottom:1px solid var(--ring)}
+.attg{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.attc{position:relative;background:var(--bg);border:3px solid var(--frame);border-radius:10px;padding:8px 4px;display:flex;flex-direction:column;align-items:center;gap:4px;text-align:center}
+.attc b{font-weight:normal;font-size:14px}.attc .ari{display:flex;flex-direction:column;align-items:center;gap:3px}
+.attc.big{grid-column:span 2;background:linear-gradient(var(--bg),rgba(242,193,78,.18))}
+.attc.got{opacity:.5}.attc.cur{border-color:var(--gold);box-shadow:0 0 0 2px var(--gold) inset}.attc.next{border-style:dashed}
+.attc em{position:absolute;top:-6px;right:-6px;font-style:normal;background:#3aa34a;color:#fff;border-radius:50%;width:18px;height:18px;font-size:11px;display:flex;align-items:center;justify-content:center}
 .pb textarea{width:100%;height:84px;font:12px/1.35 ui-monospace,Menlo,Consolas,monospace;background:var(--bg);color:var(--ink);border:2px solid var(--frame);border-radius:6px;padding:8px;resize:none;user-select:text;-webkit-user-select:text;touch-action:auto;word-break:break-all}
 .go.sub2{background:var(--btn);border-color:var(--btnEdge);font-size:19px;margin-top:8px}
 .hgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:6px}
@@ -422,7 +428,7 @@ button.item{cursor:pointer}
         <button class="sq" id="sumB"><span class="ic">🔮</span>소환</button>
         <button class="sq" id="missionB"><span class="ic">📜</span>미션<span class="dot hide" id="mDot"></span></button>
       </div>
-      <div class="side left"><button class="sq" id="clsB"><span class="ic">⚔️</span>영웅</button></div>
+      <div class="side left"><button class="sq" id="clsB"><span class="ic">⚔️</span>영웅</button><button class="sq" id="attB"><span class="ic">📅</span>출석<span class="dot hide" id="aDot"></span></button></div>
     </div>
     <div class="lbot">
       <button id="startB">시작<small id="startSub"></small></button>
@@ -544,7 +550,7 @@ const DLG2={
 function genCh2(){
   const N=['빛나는 이끼','포자의 길','갈림길 동굴','움직이는 바위','버섯 숲','포자 여왕의 정원','단검 자국','무너진 수로','잠식된 기사단','정령의 빛','깊은 이끼굴','이끼 수호자의 문'];
   const TH=['A','C','B','A','F','A','D','E','B','C','F','A'];
-  const RW={1:[2,'box'],2:[300,'g'],3:[10,'j'],4:[2,'pm'],5:[2,'box'],6:[20,'j'],7:[500,'g'],8:[3,'box'],9:[15,'j'],10:[1,'pl'],11:[3,'box'],12:[40,'j']},RW2={6:[3,'box'],12:[5,'box']};
+  const RW={1:[2,'box'],2:[2,'ebox'],3:[15,'j'],4:[2,'pm'],5:[3,'box'],6:[30,'j'],7:[3,'ebox'],8:[3,'box'],9:[20,'j'],10:[3,'ebox'],11:[3,'box'],12:[50,'j']},RW2={6:[4,'box'],12:[5,'ebox']};
   return N.map((name,i)=>{const si=i+1;let seed=si*7919+977;const rnd=()=>(seed=(seed*16807)%2147483647)/2147483647;
     const boss=si===6||si===12,lp=['A','B','C','D','E','F'];
     const lays=[0,1,2,3,4].map(f=>f===4||f===0?TH[i]:lp[Math.floor(rnd()*lp.length)]);
@@ -561,7 +567,7 @@ function genCh2(){
 function genCh1(){
   const N=['깨어남','박쥐 떼','좁은 복도','해골 감시탑','물에 잠긴 감방','슬라임 왕의 방','궁수의 길','무너진 감옥','갑옷의 행렬','미로 감옥','깊은 수로','슬라임 황제의 왕좌'];
   const TH=['A','A','B','B','C','A','D','E','B','E','F','A'];
-  const RW={1:[150,'g'],2:[2,'ps'],3:[1,'box'],4:[250,'g'],5:[1,'pm'],6:[10,'j'],7:[300,'g'],8:[2,'pm'],9:[1,'box'],10:[400,'g'],11:[1,'pl'],12:[20,'j']};
+  const RW={1:[1,'box'],2:[2,'ps'],3:[2,'box'],4:[1,'ebox'],5:[1,'pm'],6:[20,'j'],7:[2,'box'],8:[2,'ebox'],9:[2,'box'],10:[2,'ebox'],11:[1,'pl'],12:[30,'j']},RW2={6:[2,'box'],12:[3,'ebox']};
   return N.map((name,i)=>{const si=i+1;let seed=si*7919+11;const rnd=()=>(seed=(seed*16807)%2147483647)/2147483647;
     const boss=si===6||si===12,lp=si<5?['A','B']:si<7?['A','B','C','E']:['A','B','C','D','E','F'];
     const lays=[0,1,2,3,4].map(f=>f===4?TH[i]:f===0?(si<5?'A':TH[i]):lp[Math.floor(rnd()*lp.length)]);
@@ -572,11 +578,11 @@ function genCh1(){
       for(let q=0;q<R;q++){const r=[];for(let k=0;k<n;k++){let t=types[Math.floor(rnd()*types.length)];if(t==='knight'){if(kn>=(si>=11?2:1))t='slime';else kn++;}r.push(t);}rounds.push(r);}
       if(intro&&f===0&&!rounds[0].includes(intro))rounds[0][0]=intro;return rounds;});
     const d=DLG1[si]||{};
-    return{id:'1-'+si,name,lays,lv:si,rooms,boss:boss?'king':null,emp:si===12,time:100+si*14+(boss?40:0),rw:RW[si],unlock:si===6?'arc':si===12?'mag':null,pre:d.pre,post:d.post};});
+    return{id:'1-'+si,name,lays,lv:si,rooms,rw2:RW2[si],boss:boss?'king':null,emp:si===12,time:100+si*14+(boss?40:0),rw:RW[si],unlock:si===6?'arc':si===12?'mag':null,pre:d.pre,post:d.post};});
 }
 const STORY=[
-  {ch:1,name:'1장 지하 감옥',map:0,starRw:[[12,[500,'g']],[24,[2,'box']],[36,[30,'j']]],stages:genCh1()},
-  {ch:2,name:'2장 이끼 동굴',map:1,starRw:[[12,[3,'box']],[24,[30,'j']],[36,[5,'box']]],stages:genCh2()},
+  {ch:1,name:'1장 지하 감옥',map:0,starRw:[[12,[3,'ebox']],[24,[3,'box']],[36,[50,'j']]],stages:genCh1()},
+  {ch:2,name:'2장 이끼 동굴',map:1,starRw:[[12,[4,'box']],[24,[50,'j']],[36,[5,'ebox']]],stages:genCh2()},
   {ch:3,name:'3장 용암 지대',locked:true},
 
 ];
@@ -613,16 +619,16 @@ const MELEE=['sword','dagger','spear','hammer'];
 const ch1Stars=()=>Object.entries(S.story||{}).filter(([k])=>k.startsWith('1-')).reduce((a,[,v])=>a+v,0);
 const maxH=f=>Math.max(0,...Object.values(S.heroes).map(f));
 const MISSIONS=[
-  {id:'m1',name:'적 20마리 처치',goal:20,v:s=>s.kills,rew:[100,'g']},
+  {id:'m1',name:'적 20마리 처치',goal:20,v:s=>s.kills,rew:[1,'box']},
   {id:'m5',name:'적 100마리 처치',goal:100,v:s=>s.kills,rew:[3,'ps']},
   {id:'p1',name:'적 500마리 처치',goal:500,v:s=>s.kills,rew:[10,'j']},
   {id:'p2',name:'적 2000마리 처치',goal:2000,v:s=>s.kills,rew:[25,'j']},
-  {id:'p3',name:'박쥐 200마리 처치',goal:200,v:s=>s.kBat||0,rew:[10,'j']},
-  {id:'p4',name:'해골 궁수 100마리 처치',goal:100,v:s=>s.kSkel||0,rew:[10,'j']},
+  {id:'p3',name:'박쥐 200마리 처치',goal:200,v:s=>s.kBat||0,rew:[2,'box']},
+  {id:'p4',name:'해골 궁수 100마리 처치',goal:100,v:s=>s.kSkel||0,rew:[2,'ebox']},
   {id:'m14',name:'갑옷 기사 50마리 처치',goal:50,v:s=>s.kKnight||0,rew:[15,'j']},
-  {id:'m3',name:'구르기 30번',goal:30,v:s=>s.rolls,rew:[80,'g']},
-  {id:'p5',name:'구르기 500번',goal:500,v:s=>s.rolls,rew:[10,'j']},
-  {id:'p6',name:'스킬 300번 사용',goal:300,v:s=>s.skillUses||0,rew:[15,'j']},
+  {id:'m3',name:'구르기 30번',goal:30,v:s=>s.rolls,rew:[1,'ebox']},
+  {id:'p5',name:'구르기 500번',goal:500,v:s=>s.rolls,rew:[2,'ebox']},
+  {id:'p6',name:'스킬 300번 사용',goal:300,v:s=>s.skillUses||0,rew:[3,'box']},
   {id:'m6',name:'골드 1000 모으기',goal:1000,v:s=>s.goldEarned,rew:[10,'j']},
   {id:'p7',name:'골드 10000 모으기',goal:10000,v:s=>s.goldEarned,rew:[20,'j']},
   {id:'m2',name:'던전 돌파 3층 도달',goal:3,v:s=>s.best,rew:[5,'j']},
@@ -634,7 +640,7 @@ const MISSIONS=[
   {id:'p10',name:'스토리 1-12 클리어',goal:1,v:()=>S.story['1-12']?1:0,rew:[20,'j']},
   {id:'p11',name:'1장 별 24개 모으기',goal:24,v:()=>ch1Stars(),rew:[15,'j']},
   {id:'p12',name:'1장 별 36개 모으기',goal:36,v:()=>ch1Stars(),rew:[30,'j']},
-  {id:'p13',name:'영웅 3명 모으기',goal:3,v:()=>Object.keys(S.heroes).length,rew:[10,'j']},
+  {id:'p13',name:'영웅 3명 모으기',goal:3,v:()=>Object.keys(S.heroes).length,rew:[3,'box']},
   {id:'p14',name:'영웅 5명 모으기',goal:5,v:()=>Object.keys(S.heroes).length,rew:[30,'j']},
   {id:'m9',name:'영웅 하나 Lv10 달성',goal:10,v:()=>maxH(h=>h.lv),rew:[2,'pm']},
   {id:'p15',name:'영웅 하나 Lv20 달성',goal:20,v:()=>maxH(h=>h.lv),rew:[10,'j']},
@@ -644,10 +650,10 @@ const MISSIONS=[
   {id:'p18',name:'영웅 하나 3성 달성',goal:3,v:()=>maxH(h=>h.star||1),rew:[10,'j']},
   {id:'p19',name:'영웅 하나 6성 달성',goal:6,v:()=>maxH(h=>h.star||1),rew:[50,'j']},
   {id:'m11',name:'스킨 4개 모으기',goal:4,v:()=>S.skins.length,rew:[10,'j']},
-  {id:'p20',name:'스킨 8개 모으기',goal:8,v:()=>S.skins.length,rew:[20,'j']},
+  {id:'p20',name:'스킨 8개 모으기',goal:8,v:()=>S.skins.length,rew:[3,'ebox']},
   {id:'p21',name:'스킨 12개 모으기',goal:12,v:()=>S.skins.length,rew:[30,'j']},
   {id:'m12',name:'무기 하나를 +5까지 강화',goal:5,v:()=>Math.max(0,...Object.values(S.lv||{})),rew:[15,'j']},
-  {id:'p22',name:'장신구 4개 모으기',goal:4,v:()=>S.owned.filter(a=>a!=='c0').length,rew:[10,'j']},
+  {id:'p22',name:'장신구 4개 모으기',goal:4,v:()=>S.owned.filter(a=>a!=='c0').length,rew:[3,'ebox']},
   {id:'p23',name:'장신구 하나를 +5까지 재련',goal:5,v:()=>Math.max(0,...Object.values(S.rlv||{})),rew:[20,'j']},
 ];
 const MAPS=[
@@ -674,13 +680,13 @@ const OPT={music:true,sfx:true,mv:.6,sv:.7,aim:true,shake:true,dmg:true};
 try{const o=JSON.parse(localStorage.getItem('dungeon-opt')||'null');if(o)Object.assign(OPT,o);else{OPT.music=localStorage.getItem('dungeon-music')!=='off';OPT.sfx=localStorage.getItem('dungeon-sfx')!=='off';}}catch(e){}
 function saveOpt(){try{localStorage.setItem('dungeon-opt',JSON.stringify(OPT));}catch(e){}}
 const KEY='dungeon-save-v2';try{localStorage.removeItem('dungeon-save-v1');localStorage.removeItem('dungeon-best');}catch(e){}
-const defSave=()=>({gold:0,gems:0,owned:['c0'],heroes:{war:{lv:1,xp:0,skin:'w0',c:'c0',c2:'c0',star:1,frag:0}},box:0,frags:{},party:['war'],skins:['w0'],lv:{},elv:{},dust:0,afrag:{},rlv:{},pot:{ps:0,pm:0,pl:0},
+const defSave=()=>({gold:0,gems:0,owned:['c0'],heroes:{war:{lv:1,xp:0,skin:'w0',c:'c0',c2:'c0',star:1,frag:0}},box:0,frags:{},party:['war'],skins:['w0'],lv:{},elv:{},dust:0,afrag:{},rlv:{},ebox:0,att:{n:0,last:''},pot:{ps:0,pm:0,pl:0},
   story:{},storyRw:[],talked:[],sprog:{},st:{kills:0,rolls:0,goldEarned:0,best:0,bestHard:0,kKnight:0,kSkel:0,kBat:0,bestWar:0,bestArc:0,bestMag:0},claimed:[],sel:{map:0,diff:0},cls:'war',acc2:false});
 let S=defSave();
 function norm(o){const d=defSave();
   const r={...d,...o,st:{...d.st,...(o.st||{})},heroes:{...d.heroes,...(o.heroes||{})},pot:{...d.pot,...(o.pot||{})},lv:{...(o.lv||{})},elv:{...(o.elv||{})},
     sel:{...d.sel,...(o.sel||{}),diff:0},t:o.t||0,owned:[...new Set([...d.owned,...(o.owned||[])])],skins:[...new Set([...d.skins,...(o.skins||[])])]};
-  for(const k in r.heroes){const h=r.heroes[k];h.star=h.star||1;h.frag=h.frag||0;if(!h.rb)h.rb=k==='war'?{}:{kills:r.st.kills||0,kKnight:r.st.kKnight||0,kSkel:r.st.kSkel||0,kBat:r.st.kBat||0};}r.frags={...(o.frags||{})};r.box=o.box||0;r.afrag={...(o.afrag||{})};r.rlv={...(o.rlv||{})};
+  for(const k in r.heroes){const h=r.heroes[k];h.star=h.star||1;h.frag=h.frag||0;if(!h.rb)h.rb=k==='war'?{}:{kills:r.st.kills||0,kKnight:r.st.kKnight||0,kSkel:r.st.kSkel||0,kBat:r.st.kBat||0};}r.frags={...(o.frags||{})};r.box=o.box||0;r.ebox=o.ebox||0;r.att={n:0,last:'',...(o.att||{})};r.afrag={...(o.afrag||{})};r.rlv={...(o.rlv||{})};
   {const seen=new Set();for(const k of Object.keys(r.heroes)){const h=r.heroes[k];for(const sl of ['c','c2']){const a=h[sl]||'c0';if(a==='c0')continue;if(seen.has(a))h[sl]='c0';else seen.add(a);}}}
   r.party=(r.party||['war']).filter(id=>r.heroes[id]).slice(0,3);if(!r.party.length)r.party=['war'];r.cls=r.party[0];return r;}
 function lo(cls){return S.heroes[cls]||S.heroes[S.party[0]];}
@@ -691,34 +697,34 @@ try{const raw=localStorage.getItem(KEY);
 S.sel.diff=0;
 let shopTab=null,missionTab='d';
 const DAILY=[
-  {id:'d1',name:'슬라임 30마리 처치',evt:'kSlime',goal:30,rew:[2,'ps']},
-  {id:'d2',name:'적 50마리 처치',evt:'kills',goal:50,rew:[3,'j']},
+  {id:'d1',name:'슬라임 30마리 처치',evt:'kSlime',goal:30,rew:[1,'box']},
+  {id:'d2',name:'적 50마리 처치',evt:'kills',goal:50,rew:[5,'j']},
   {id:'d3',dun:1,name:'던전 돌파 3층 도달',evt:'floorMax',goal:3,rew:[2,'j']},
   {id:'d4',dun:1,name:'던전 돌파 5층 도달',evt:'floorMax',goal:5,rew:[3,'j']},
   {id:'d5',name:'스킬 10번 사용',evt:'skill',goal:10,rew:[1,'pm']},
   {id:'d6',name:'구르기 30번',evt:'roll',goal:30,rew:[2,'j']},
-  {id:'d7',name:'박쥐 10마리 처치',evt:'kBat',goal:10,rew:[150,'g']},
+  {id:'d7',name:'박쥐 10마리 처치',evt:'kBat',goal:10,rew:[1,'ebox']},
   {id:'d8',name:'해골 궁수 8마리 처치',evt:'kSkel',goal:8,rew:[2,'j']},
-  {id:'d9',name:'탐험 3번 출발',evt:'runs',goal:3,rew:[3,'j']},
-  {id:'d10',name:'골드 300 모으기',evt:'gold',goal:300,rew:[100,'g']},
-  {id:'d11',name:'방 10개 클리어',evt:'rooms',goal:10,rew:[2,'ps']},
-  {id:'d12',name:'스토리 스테이지 1개 클리어',evt:'stageClear',goal:1,rew:[3,'j']},
+  {id:'d9',name:'탐험 3번 출발',evt:'runs',goal:3,rew:[5,'j']},
+  {id:'d10',name:'골드 300 모으기',evt:'gold',goal:300,rew:[1,'ebox']},
+  {id:'d11',name:'방 10개 클리어',evt:'rooms',goal:10,rew:[1,'box']},
+  {id:'d12',name:'스토리 스테이지 1개 클리어',evt:'stageClear',goal:1,rew:[5,'j']},
   {id:'d13',name:'영웅 교체 10번',evt:'heroSwap',goal:10,rew:[2,'j']},
 ];
 const WEEKLY=[
-  {id:'k1',name:'갑옷 기사 10마리 처치',evt:'kKnight',goal:10,rew:[8,'j']},
-  {id:'k2',dun:1,name:'누적 50층 돌파',evt:'floors',goal:50,rew:[2,'pm']},
-  {id:'k3',name:'적 400마리 처치',evt:'kills',goal:400,rew:[2,'box']},
-  {id:'k4',dun:1,name:'던전 돌파 8층 도달',evt:'floorMax',goal:8,rew:[10,'j']},
-  {id:'k5',name:'무기, 장비 강화 3번',evt:'upgrade',goal:3,rew:[8,'j']},
-  {id:'k6',dun:1,name:'층 보너스 5번 고르기',evt:'boon',goal:5,rew:[1,'pl']},
-  {id:'k7',name:'스킬 60번 사용',evt:'skill',goal:60,rew:[10,'j']},
-  {id:'k8',name:'일일 보너스 5번 받기',evt:'dailyBonus',goal:5,rew:[15,'j']},
-  {id:'k9',name:'스토리 스테이지 5개 클리어',evt:'stageClear',goal:5,rew:[12,'j']},
-  {id:'k10',name:'장신구 재련 1번',evt:'refine',goal:1,rew:[8,'j']},
-  {id:'k11',name:'영웅 레벨 업 5번',evt:'lvup',goal:5,rew:[10,'j']},
+  {id:'k1',name:'갑옷 기사 10마리 처치',evt:'kKnight',goal:10,rew:[12,'j']},
+  {id:'k2',dun:1,name:'누적 50층 돌파',evt:'floors',goal:50,rew:[3,'box']},
+  {id:'k3',name:'적 400마리 처치',evt:'kills',goal:400,rew:[3,'ebox']},
+  {id:'k4',dun:1,name:'던전 돌파 8층 도달',evt:'floorMax',goal:8,rew:[15,'j']},
+  {id:'k5',name:'무기, 장비 강화 3번',evt:'upgrade',goal:3,rew:[12,'j']},
+  {id:'k6',dun:1,name:'층 보너스 5번 고르기',evt:'boon',goal:5,rew:[2,'box']},
+  {id:'k7',name:'스킬 60번 사용',evt:'skill',goal:60,rew:[15,'j']},
+  {id:'k8',name:'일일 보너스 5번 받기',evt:'dailyBonus',goal:5,rew:[20,'j']},
+  {id:'k9',name:'스토리 스테이지 5개 클리어',evt:'stageClear',goal:5,rew:[20,'j']},
+  {id:'k10',name:'장신구 재련 1번',evt:'refine',goal:1,rew:[2,'ebox']},
+  {id:'k11',name:'영웅 레벨 업 5번',evt:'lvup',goal:5,rew:[15,'j']},
 ];
-const DAILY_BONUS=[5,'j'];
+const DAILY_BONUS=[10,'j'];
 const kstNow=()=>new Date(Date.now()+9*3600e3);
 const dayKey=()=>kstNow().toISOString().slice(0,10);
 function weekKey(){const d=kstNow(),diff=(d.getUTCDay()+6)%7;return new Date(d.getTime()-diff*864e5).toISOString().slice(0,10);}
@@ -776,7 +782,7 @@ function skinReq(id){const it=ITEMS[id],K=SKILLS[id];
   if(it.tier===4){if(!H0)return{txt:`${CLASSES[it.cls].name} Lv20 달성`,ok:false,prog:'영웅 필요'};return{txt:`${CLASSES[it.cls].name} Lv20 달성`,ok:H0.lv>=20,prog:`Lv${H0.lv}/20`};}return null;}
 function gainXP(hid,amt){const H=S.heroes[hid];if(!H||H.lv>=MAXHLV)return 0;H.xp+=Math.round(amt);let ups=0;
   while(H.lv<MAXHLV&&H.xp>=xpNeed(H.lv)){H.xp-=xpNeed(H.lv);H.lv++;ups++;}if(ups)inc('lvup',ups);if(H.lv>=MAXHLV)H.xp=0;return ups;}
-function rewTxt(r){return r[1]==='g'?`골드 ${r[0]}`:r[1]==='j'?`보석 ${r[0]}`:r[1]==='box'?`영혼 상자 ${r[0]}개`:`${POTS[r[1]].name} ${r[0]}개`;}
+function rewTxt(r){return r[1]==='g'?`골드 ${r[0]}`:r[1]==='j'?`보석 ${r[0]}`:r[1]==='box'?`영혼 상자 ${r[0]}개`:r[1]==='ebox'?`장비 상자 ${r[0]}개`:`${POTS[r[1]].name} ${r[0]}개`;}
 const REF_NEED=[1,2,3,4,5],REF_MAX=5;
 const rlvOf=id=>(S.rlv&&S.rlv[id])||0,rMul=id=>1+.2*rlvOf(id);
 function accDesc(id){const it=ITEMS[id],m=rMul(id),out=[];if(id==='c0')return it.desc;
@@ -784,9 +790,11 @@ function accDesc(id){const it=ITEMS[id],m=rMul(id),out=[];if(id==='c0')return it
   if(it.crit)out.push(`치명타율 +${Math.round(it.crit*m*100)}%`);if(it.goldMul)out.push(`골드 +${Math.round(it.goldMul*m*100)}%`);
   if(it.swim)out.push(`물 위를 걸을 수 있어요 (물에서 속도 ${Math.min(100,60+8*rlvOf(id))}%)`);return out.join(', ');}
 function accOwner(id){for(const k of Object.keys(S.heroes)){const h=S.heroes[k];if(h.c===id||(S.acc2&&h.c2===id))return k;}return null;}
-function rewIcon(r){const ic=r[1]==='g'?COIN:r[1]==='j'?GEM:r[1]==='box'?'<span class="emo">📦</span>':`<span class="emo">🧪</span>`;
-  return `<span class="ri">${ic}<span>${r[1]==='g'||r[1]==='j'||r[1]==='box'?r[0]:POTS[r[1]].sh+r[0]}</span></span>`;}
-function grant(r){if(r[1]==='g')S.gold+=r[0];else if(r[1]==='j')S.gems+=r[0];else if(r[1]==='box')S.box=(S.box||0)+r[0];else S.pot[r[1]]=(S.pot[r[1]]||0)+r[0];}
+function rewIcon(r){const ic=r[1]==='g'?COIN:r[1]==='j'?GEM:r[1]==='box'?'<span class="emo">📦</span>':r[1]==='ebox'?'<span class="emo">🎁</span>':`<span class="emo">🧪</span>`;
+  return `<span class="ri">${ic}<span>${r[1]==='g'||r[1]==='j'||r[1]==='box'||r[1]==='ebox'?r[0]:POTS[r[1]].sh+r[0]}</span></span>`;}
+const ATT=[[[300,'g'],[1,'box']],[[2,'box']],[[30,'j']],[[2,'ebox']],[[1,'pm'],[1,'box']],[[3,'box']],[[50,'j'],[3,'ebox']]];
+const attCan=()=>!!S.att&&S.att.last!==dayKey();
+function grant(r){if(r[1]==='g')S.gold+=r[0];else if(r[1]==='j')S.gems+=r[0];else if(r[1]==='box')S.box=(S.box||0)+r[0];else if(r[1]==='ebox')S.ebox=(S.ebox||0)+r[0];else S.pot[r[1]]=(S.pot[r[1]]||0)+r[0];}
 
 /* ---------- 맵 ---------- */
 const LAYOUTS={
@@ -1795,7 +1803,7 @@ function renderLobby(){
   $('bestTxt').textContent=S.st.best?`최고 ${S.st.best}층`:'첫 탐험을 기다리는 중';
   $('startSub').textContent=`${S.party.map(id=>CLASSES[id].name).join(', ')} / ${MAPS[S.sel.map].name}`;
   {const id=S.party[0],H=S.heroes[id];$('heroName').textContent=`${CLASSES[id].name} Lv${H.lv}, ${SKN(H.skin)}`;}
-  $('mDot').classList.toggle('hide',claimable()===0);
+  $('mDot').classList.toggle('hide',claimable()===0);$('aDot').classList.toggle('hide',!attCan());
 }
 function showLobby(){story=null;pendGold=0;pendXP={};$('boon').classList.add('hide');$('dlg').classList.add('hide');$('bossBar').classList.add('hide');resetGame();state='title';ov.classList.add('hide');renderLobby();lobby.classList.remove('hide');}
 function drawHero(){
@@ -1811,7 +1819,7 @@ function drawHero(){
 
 /* ---------- 시트 ---------- */
 const sheet=$('sheet'),shB=$('shB');let sheetKind=null;
-const priceHtml=p=>p[1]==='g'||p[1]==='j'?(p[1]==='g'?COIN:GEM)+p[0]:p[1]==='box'?`📦×${p[0]}`:`🧪${POTS[p[1]].sh}×${p[0]}`;
+const priceHtml=p=>p[1]==='g'||p[1]==='j'?(p[1]==='g'?COIN:GEM)+p[0]:p[1]==='box'?`📦×${p[0]}`:p[1]==='ebox'?`🎁×${p[0]}`:`🧪${POTS[p[1]].sh}×${p[0]}`;
 let potSel={ps:0,pm:0,pl:0};
 let heroSel=null,heroTab='lv',modeTab='story',lastPull=null,sumTab='hero';
 const starTxt=n=>'★'.repeat(n)+'☆'.repeat(MAXSTAR-n);
@@ -1943,17 +1951,23 @@ const PANELS={
     const res=lastPull&&lastPull.kind===sumTab?`<h3>소환 결과</h3><div class="sgrid">`+lastPull.map(x=>x.acc?`<div class="scard ${x.isNew?'new':''}"><span class="sw" style="background:${ITEMS[x.acc].col};width:22px;height:22px;margin:6px 0"></span>
       <b>${ITEMS[x.acc].name}</b><span class="grade g-${x.g}">${GRADES[x.g].name}</span><small>${x.isNew?'새 장신구!':`장비 조각 ×${x.afrag||1}`}</small></div>`:`<div class="scard ${x.isNew?'new':''}"><canvas ${S.heroes[x.id]?`data-hero="${x.id}"`:`data-hsil="${x.id}"`} width="10" height="12"></canvas>
       <b>${CLASSES[x.id].name}</b><span class="grade g-${x.g}">${GRADES[x.g].name}</span><small>${x.isNew?'새 영웅!':`영혼조각 ×${x.frag}`}</small></div>`).join('')+`</div>`:'';
-    const wl=`<div class="wl"><span>${GEM}${S.gems}</span><span>📦 ${S.box||0}</span><span>✨ ${S.dust||0}</span></div>`;
+    const wl=`<div class="wl"><span>${GEM}${S.gems}</span><span>📦 ${S.box||0}</span><span>🎁 ${S.ebox||0}</span></div>`;
     if(sumTab==='eq')return wl+tabs+`<p class="hint" style="text-align:left">장신구가 나와요. 이미 가진 장신구가 나오면 그 장신구의 장비 조각으로 바뀌어요. 장비 조각은 영웅 창의 장비 탭에서 재련할 때 써요.</p>
-      <div class="opts"><button class="opt" data-act="pull" data-id="e1">1회 소환<small>보석 ${EPULL1}</small></button><button class="opt" data-act="pull" data-id="e10">10회 소환<small>보석 ${EPULL10}</small></button></div>${res}
+      <div class="opts"><button class="opt" data-act="pull" data-id="e1">1회 소환<small>${(S.ebox||0)>=1?'장비 상자 1개':'보석 '+EPULL1}</small></button><button class="opt" data-act="pull" data-id="e10">10회 소환<small>${(S.ebox||0)>=10?'장비 상자 10개':'보석 '+EPULL10}</small></button></div>${res}
       <h3>등급별 확률</h3><div class="list">`+['l','e','r','c'].map(g=>{const ks=Object.keys(ACC_G).filter(k=>ACC_G[k]===g);
         return `<div class="item"><span class="grade g-${g}">${GRADES[g].name}</span><span class="tx"><b>${Math.round(GRADES[g].rate*100)}%</b><small>${ks.length?ks.map(k=>ITEMS[k].name).join(', '):'아직 없음 (아래 등급으로 대체)'}, 중복 시 장비 조각 1개</small></span></div>`;}).join('')+`</div>`;
     return wl+tabs+`<p class="hint" style="text-align:left">대부분은 영혼조각이 나와요. 높은 등급 영웅의 조각도 꽤 자주 나오고, 영웅 자체는 낮은 확률로 나와요. 이미 있는 영웅이 나오면 조각 묶음으로 바뀌어요. 없는 영웅의 조각을 ${UNLOCK_FRAG}개 모으면 해방할 수 있어요.</p>
-      <div class="opts"><button class="opt" data-act="pull" data-id="h1">1회 소환<small>${(S.box||0)>0?'영혼 상자 1개':'보석 '+PULL1}</small></button>
-      <button class="opt" data-act="pull" data-id="h10">10회 소환<small>보석 ${PULL10}</small></button></div>${res}
+      <div class="opts"><button class="opt" data-act="pull" data-id="h1">1회 소환<small>${(S.box||0)>=1?'영혼 상자 1개':'보석 '+PULL1}</small></button>
+      <button class="opt" data-act="pull" data-id="h10">10회 소환<small>${(S.box||0)>=10?'영혼 상자 10개':'보석 '+PULL10}</small></button></div>${res}
       <h3>확률표</h3><div class="rtab"><div class="rh"><span>등급</span><span>영웅</span><span>영혼조각</span></div>`+['l','e','r','c'].map(g=>{const hs=HERO_IDS.filter(id=>CLASSES[id].grade===g);
         return `<div class="rr"><span><span class="grade g-${g}">${GRADES[g].name}</span></span><span>${(HERO_RATE[g]*100).toFixed(1)}%<small>중복 시 조각 ${DUP_N[g]}</small></span><span>${Math.round(FRAG_RATE[g]*100)}%<small>${FRAG_N[g]}개씩</small></span></div>
           <div class="rn">${hs.length?hs.map(id=>CLASSES[id].name+(inPool(id)?'':` (스토리 ${STORY_LOCK[id]} 클리어 후)`)).join(', '):'아직 영웅 없음, 아래 등급으로 대체'}</div>`;}).join('')+`</div>`;}],
+  attend:['출석',()=>{const n=(S.att&&S.att.n)||0,today=n%7,can=attCan(),cycleStart=n-today;
+    return `<p class="hint" style="text-align:left;margin:2px 0 8px">하루에 한 번 받을 수 있어요. 7일차까지 받으면 다시 1일차부터 시작해요. (지금까지 ${n}일 출석)</p><div class="attg">`+ATT.map((rs,i)=>{
+      const got=i<today||(!can&&i===today&&false),cur=i===today;const done=i<today||(!can&&i===(today+6)%7&&false);
+      const st=i<today?'got':i===today&&can?'cur':i===today&&!can?'next':'';
+      return `<div class="attc ${st} ${i===6?'big':''}"><b>${i+1}일차</b><div class="ari">${rs.map(r=>rewIcon(r)).join('')}</div>${i<today?'<em>✓</em>':''}</div>`;}).join('')+`</div>
+      <button class="go" data-act="attget" ${can?'':'disabled'}>${can?`${today+1}일차 보상 받기`:'오늘은 이미 받았어요'}</button>`;}],
   party:['파티',()=>{
     const slots=[0,1,2].map(i=>{const id=S.party[i];if(!id)return `<div class="pslot empty"><small>빈 자리</small></div>`;const H=S.heroes[id];
       return `<div class="pslot"><canvas data-hero="${id}" width="10" height="12"></canvas><b>${CLASSES[id].name}</b><small>Lv${H.lv}${i===0?', 먼저 출전':''}</small></div>`;}).join('');
@@ -2055,10 +2069,12 @@ function sheetAct(e){
   else if(a==='stage'){if(!stageOpen(id))return;startStage(id);return;}
   else if(a==='opt'){if(id==='music')setMusic(!musicOn);else if(id==='sfx')setSfx(!sfxOn);else{OPT[id]=!OPT[id];saveOpt();}}
   else if(a==='gosave'){impArm=false;openSheet('save');return;}
+  else if(a==='attget'){if(!attCan())return;const n=S.att.n%7;ATT[n].forEach(r=>grant(r));S.att.n++;S.att.last=dayKey();sfx('up');
+    toast(`출석 ${n+1}일차: ${ATT[n].map(rewTxt).join(', ')}`);}
   else if(a==='stab'){sumTab=id;renderSheet();shB.scrollTop=0;return;}
   else if(a==='pull'){const kind=id[0]==='e'?'eq':'hero',n=+id.slice(1);
     const cost=kind==='eq'?(n===1?EPULL1:EPULL10):(n===1?PULL1:PULL10);
-    if(kind==='hero'&&n===1&&(S.box||0)>0)S.box--;else if(S.gems>=cost)S.gems-=cost;else{toast('보석이 부족해요');return;}
+    const bk=kind==='hero'?'box':'ebox';if((S[bk]||0)>=n)S[bk]-=n;else if(S.gems>=cost)S.gems-=cost;else{toast('보석이 부족해요');return;}
     lastPull=[];lastPull.kind=kind;for(let q=0;q<n;q++)lastPull.push(pullOne(kind));gachaPlay(lastPull);
     const nw=lastPull.filter(x=>x.isNew);if(nw.length)toast(`새로 얻음: ${nw.map(x=>x.acc?ITEMS[x.acc].name:CLASSES[x.id].name).join(', ')}!`);}
   else if(a==='starup'){const H=S.heroes[heroSel];if(!H)return;const sv=H.star||1,need=STAR_NEED[sv];if(sv>=MAXSTAR||(H.frag||0)<need||S.gold<starCost(sv))return;S.gold-=starCost(sv);
@@ -2082,6 +2098,7 @@ $('startB').addEventListener('click',()=>openSheet('mode'));
 $('equipB').addEventListener('click',()=>openSheet('party'));
 $('shopB').addEventListener('click',()=>openSheet('shop'));
 $('missionB').addEventListener('click',()=>openSheet('mission'));
+$('attB').addEventListener('click',()=>openSheet('attend'));
 $('sumB').addEventListener('click',()=>{lastPull=null;openSheet('summon');});
 $('setL').addEventListener('click',()=>openSheet('settings'));
 $('clsB').addEventListener('click',()=>{heroSel=null;openSheet('hero');});
@@ -2240,7 +2257,7 @@ function sfx(name){
   try{SFX[name]&&SFX[name](t);}catch(e){}
 }
 addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('button');
-  if(b&&!['atk','roll','swap','sfxL','skill'].includes(b.id)&&!['buy','up','claim','skill','claimP','claimB','acc2','wup','eup','skinbuy','potbuy','pot','stage','pull','starup','hunlock','refine','psel','plvup'].includes(b.dataset.act))sfx('ui');},true);
+  if(b&&!['atk','roll','swap','sfxL','skill'].includes(b.id)&&!['buy','up','claim','skill','claimP','claimB','acc2','wup','eup','skinbuy','potbuy','pot','stage','pull','starup','hunlock','refine','psel','plvup','attget'].includes(b.dataset.act))sfx('ui');},true);
 $('musB').addEventListener('click',()=>setMusic(!musicOn));
 
 document.addEventListener('visibilitychange',()=>{if(!actx)return;if(document.hidden)actx.suspend();else if(musicOn||sfxOn)actx.resume();});
@@ -2248,6 +2265,7 @@ renderMusic();
 
 /* ---------- 시작 ---------- */
 showLobby();fit();renderSync();initCloud();
+setTimeout(()=>{if(attCan()&&!lobby.classList.contains('hide')&&sheet.classList.contains('hide'))openSheet('attend');},1200);
 let last=performance.now();
 document.addEventListener('visibilitychange',()=>{last=performance.now();if(document.hidden){pause();save();clearTimeout(cloudT);pushCloud();}});
 function frame(now){let dt=Math.min(.05,(now-last)/1000);last=now;
