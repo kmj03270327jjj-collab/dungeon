@@ -846,6 +846,7 @@ const LAYOUTS={
   C:[".................",".................","...#...~~~...#...",".....~~~~~~~.....","....~~~~~~~~~....",".....~~~~~~~.....","...#...~~~...#...",".................","................."],
   D:[".................",".................","..#...........#..",".................","~~~~.~~~~~~~.~~~~",".................","..#...........#..",".................","................."],
   E:[".................",".###.#######.###.",".................","..#....#.#....#..","..#....#.#....#..","..#...........#..",".......###.......",".................","................."],
+  O:Array(9).fill("................."),
   F:[".................",".~~...........~~.",".~....#...#....~.","......~~.~~......","~~....~...~....~~","......~~.~~......",".~....#...#....~.",".~~...........~~.","................."],
 };
 const FLOOR_LAY={3:'B',4:'C',5:'B',6:'D',7:'E',8:'F'};
@@ -907,11 +908,11 @@ function setMap(mi,lay='A'){const port=innerHeight>innerWidth;if(port!==PORT)set
 const tileAt=(tx,ty)=>tx<0||ty<0||tx>=W||ty>=H?1:map[ty][tx];
 const passT=(x,y,fly)=>{const v=tileAt(x,y);return v===0||(fly&&v===2);};
 const DIRS8=[[1,0],[-1,0],[0,1],[0,-1],[1,1],[1,-1],[-1,1],[-1,-1]];
-function bfs(sx,sy,fly){const D=new Float32Array(W*H).fill(1e9);D[sy*W+sx]=0;const q=[sx,sy];let h=0;
-  while(h<q.length){const x=q[h++],y=q[h++],d=D[y*W+x];
+function bfs(sx,sy,fly){const D=new Int32Array(W*H).fill(1e9);D[sy*W+sx]=0;const q=[sx,sy];let h=0;const lim=W*H*60;
+  while(h<q.length&&h<lim){const x=q[h++],y=q[h++],d=D[y*W+x];
     for(const [ox,oy] of DIRS8){const nx=x+ox,ny=y+oy;if(!passT(nx,ny,fly))continue;
       if(ox&&oy&&(!passT(x+ox,y,fly)||!passT(x,y+oy,fly)))continue;
-      const nd=d+(ox&&oy?1.41:1);if(nd<D[ny*W+nx]){D[ny*W+nx]=nd;q.push(nx,ny);}}}
+      const nd=d+(ox&&oy?14:10);if(nd<D[ny*W+nx]){D[ny*W+nx]=nd;q.push(nx,ny);}}}
   return D;}
 function buildFlow(){const tx=Math.max(0,Math.min(W-1,Math.floor(P.x/T))),ty=Math.max(0,Math.min(H-1,Math.floor(P.y/T))),k=tx+','+ty+curLay+W;
   if(k===flowKey)return;flowKey=k;flowW=bfs(tx,ty,false);flowF=bfs(tx,ty,true);}
@@ -1015,7 +1016,7 @@ let msgT=0,fade=0;
 function say(text,dur=2.4){$('pmsg').textContent=text;msgT=dur;}
 let PT=[],PI=0,minions=[],clouds=[],eclouds=[];
 let P,ST,enemies=[],parts=[],nums=[],projs=[],rings=[],bolts=[],drops=[],wave=1,runKills=0,runGold=0,diff=0,state='title',prevState=null,doorOpen=false,shake=0,hitStop=0,timer=0,time=0;
-function collides(e){const x0=Math.floor((e.x-e.r)/T),x1=Math.floor((e.x+e.r)/T),y0=Math.floor((e.y-e.r)/T),y1=Math.floor((e.y+e.r)/T);
+function collides(e){const r=e.cr||e.r,x0=Math.floor((e.x-r)/T),x1=Math.floor((e.x+r)/T),y0=Math.floor((e.y-r)/T),y1=Math.floor((e.y+r)/T);
   for(let y=y0;y<=y1;y++)for(let x=x0;x<=x1;x++){const v=tileAt(x,y);if(v===1||(v===2&&!e.swim))return true;}return false;}
 function move(e,dx,dy){e.x+=dx;if(collides(e)){e.x-=dx;e.vx*=-.3;}e.y+=dy;if(collides(e)){e.y-=dy;e.vy*=-.3;}}
 function burst(x,y,n,c,sp=50){for(let i=0;i<n;i++){const a=Math.random()*Math.PI*2,s=sp*(.4+Math.random()*.8);
@@ -1044,7 +1045,7 @@ function pickType(kn){const o=[['slime',1]];if(wave>=2)o.push(['bat',.6]);if(wav
 const DUN_BOSS=[{mini:'king',big:'king',bigEmp:1},{mini:'queen',big:'guardian'},{mini:'king',big:'king',bigEmp:1}];
 function startWave(){
   const bossF=wave%10===0,bigF=wave%50===0;
-  doorOpen=false;setMap(curMap,bossF?'A':layoutFor(wave));buildFlow();
+  doorOpen=false;setMap(curMap,bossF?'O':layoutFor(wave));buildFlow();
   S.st.best=Math.max(S.st.best,wave);{const bk={war:'bestWar',arc:'bestArc',mag:'bestMag'}[ST.cls];S.st[bk]=Math.max(S.st[bk]||0,wave);}inc('floorMax',wave,'max');inc('cf_'+ST.cls,wave,'max');if(diff)S.st.bestHard=Math.max(S.st.bestHard,wave);
   const n=bigF?0:bossF?Math.min(1+Math.floor(wave/10),4):Math.min(2+wave,8),types=[];let kn=0;
   for(let i=0;i<n;i++){const t=pickType(kn);if(t==='knight')kn++;types.push(t);}
@@ -1104,7 +1105,7 @@ const AI={
     else if(e.state==='rest'){e.t-=dt;if(e.t<=0)e.state='chase';}
     return [mx,my];},
   king(e,dt,dx,dy,d){let mx=0,my=0;const ph2=e.hp<e.max*.5;
-    if(!e.init){e.init=1;e.boss=1;e.cdJ=3;e.cdS=2;e.sum=0;e.z=0;}
+    if(!e.init){e.init=1;e.boss=1;e.cr=6;e.cdJ=3;e.cdS=2;e.sum=0;e.z=0;}
     if(e.state==='chase'){e.cdJ-=dt;e.cdS-=dt;const [ux,uy]=steer(e);mx=ux*(ph2?22:15);my=uy*(ph2?22:15);
       if(e.cdJ<=0){e.state='windup';e.kind='jump';e.t=.8;e.tx=P.x;e.ty=P.y;}
       else if(e.cdS<=0&&los(e.x,e.y,P.x,P.y,true,1)){e.state='windup';e.kind='spit';e.t=.65;e.dx=dx/d;e.dy=dy/d;}
@@ -1136,7 +1137,7 @@ const AI={
     else if(e.state==='rest'){e.t-=dt;if(e.t<=0)e.state='chase';}
     return [mx,my];},
   queen(e,dt,dx,dy,d){let mx=0,my=0;const ph2=e.hp<e.max*.5;
-    if(!e.init){e.init=1;e.boss=1;e.cdP=3;e.cdR=4;e.cdA=2;}
+    if(!e.init){e.init=1;e.boss=1;e.cr=6;e.cdP=3;e.cdR=4;e.cdA=2;}
     if(e.state==='chase'){e.cdP-=dt;e.cdR-=dt;e.cdA-=dt;const cx=LW/2-e.x,cy=LH*.35-e.y,l=Math.hypot(cx,cy);if(l>4){mx=cx/l*10;my=cy/l*10;}
       if(e.cdP<=0){e.cdP=ph2?5:7;const n=enemies.filter(o=>o.type==='shroom'&&o.hp>0).length;for(let k=0;k<Math.min(2,6-n);k++)spawn('shroom');say('포자 여왕: 자라나라, 내 아이들!',1.8);}
       else if(e.cdR<=0){e.state='windup';e.kind='ring';e.t=.9;}
@@ -1148,7 +1149,7 @@ const AI={
     else if(e.state==='rest'){e.t-=dt;if(e.t<=0)e.state='chase';}
     return [mx,my];},
   guardian(e,dt,dx,dy,d){let mx=0,my=0;const ph2=e.hp<e.max*.5;
-    if(!e.init){e.init=1;e.boss=1;e.cdC=3;e.cdV=5;}
+    if(!e.init){e.init=1;e.boss=1;e.cr=6;e.cdC=3;e.cdV=5;}
     if(ph2&&!e.ph2){e.ph2=1;e.armor=14;say('이끼 수호자: 이끼여, 나를 감싸라!',2);rings.push({x:e.x,y:e.y,t:.4,rad:30,c:'120,220,90'});sfx('up');}
     if(e.state==='chase'){e.cdC-=dt;e.cdV-=dt;const [ux,uy,v]=steer(e);mx=ux*16;my=uy*16;
       if(e.cdV<=0){e.state='windup';e.kind='vine';e.t=1;e.pts=[[P.x,P.y]];for(let k=0;k<(ph2?5:3);k++){const a=Math.random()*6.28,r=22+Math.random()*30;e.pts.push([P.x+Math.cos(a)*r,P.y+Math.sin(a)*r]);}}
@@ -1497,7 +1498,7 @@ let story=null,storyT=0,storyF=0,storyR=0,roundWait=0,pendGold=0,pendXP={};
 let rush=null;
 function startRush(){if(brLeft()<=0||!S.story['1-6'])return;if(!S.br||S.br.key!==dayKey())S.br={key:dayKey(),used:0};S.br.used++;inc('rush');save();
   closeSheet();lobby.classList.add('hide');ov.classList.add('hide');resetGame();diff=0;story=null;rush={f:1,got:[]};inc('runs');rushRoom();}
-function rushRoom(){const B=RUSH_SEQ[(rush.f-1)%RUSH_SEQ.length];wave=8+rush.f*3;setMap(B.map,'A');doorOpen=false;buildFlow();
+function rushRoom(){const B=RUSH_SEQ[(rush.f-1)%RUSH_SEQ.length];wave=8+rush.f*3;setMap(B.map,'O');doorOpen=false;buildFlow();
   spawn(B.type);const b=enemies[enemies.length-1];b.x=LW/2;b.y=3*T+8;b.t=b.t0=1.4;if(B.emp){b.emp=1;b.bname='슬라임 황제';}
   b.max=b.hp=Math.round(b.max*2.2*Math.pow(1.45,rush.f-1)*(B.emp?1.3:1));state='play';say(`보스 러시 ${rush.f}층: ${rushName(rush.f)}!`,2.4);}
 function restart(){if(rush){if(brLeft()>0)startRush();else showLobby();return;}if(story){startStage(story.id);return;}resetGame();inc('runs');startWave();}
@@ -1507,7 +1508,7 @@ function stageOpen(id){const [c,s2]=findStage(id);if(!c)return false;const i=c.s
 function startStage(id){const [c,st]=findStage(id);if(!st)return;
   closeSheet();lobby.classList.add('hide');ov.classList.add('hide');resetGame();diff=0;story=st;if(S.sprog)delete S.sprog[st.id];storyF=0;storyT=0;pendGold=0;pendXP={};inc('runs');
   if(storyF===0&&st.pre&&!S.talked.includes(st.id+'a')){S.talked.push(st.id+'a');save();setMap(c.map,st.lays[0]);showDialog(st.pre,storyRoom);}else storyRoom();}
-function storyRoom(){const st=story,[c]=findStage(st.id),f=storyF;wave=st.lv+Math.floor(f/2);setMap(c.map,st.lays[f]);doorOpen=false;buildFlow();
+function storyRoom(){const st=story,[c]=findStage(st.id),f=storyF;wave=st.lv+Math.floor(f/2);setMap(c.map,f===4&&st.boss?'O':st.lays[f]);doorOpen=false;buildFlow();
   storyR=0;roundWait=0;st.rooms[f][0].forEach(t=>spawn(t));
   if(f===4&&st.boss){spawn(st.boss);const b=enemies[enemies.length-1];b.x=LW/2;b.y=3*T+8;b.t=b.t0=1.2;
     if(st.emp){b.emp=1;b.bname='슬라임 황제';b.max=b.hp=Math.round(b.max*1.5);}}
