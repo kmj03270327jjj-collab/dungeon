@@ -349,6 +349,13 @@ button.item{cursor:pointer}
 .rushc em,.passc em{position:absolute;top:-6px;right:-6px;font-style:normal;background:#3aa34a;color:#fff;border-radius:50%;width:16px;height:16px;font-size:10px;display:flex;align-items:center;justify-content:center}
 .passl{display:grid;grid-template-columns:repeat(5,1fr);gap:6px}
 .passc.big{background:linear-gradient(var(--panel),rgba(242,193,78,.25))}
+.boxes{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:2px 0 10px}
+.bx{display:grid;grid-template-columns:auto 1fr;grid-template-rows:auto auto;align-items:center;column-gap:6px;background:var(--bg);border:3px solid var(--frame);border-radius:10px;padding:6px 10px}
+.bx svg{width:26px;height:26px;grid-row:1/3}.bx span{font-size:13px;color:var(--muted)}.bx b{font-weight:normal;font-size:20px;line-height:1}
+.bx small{grid-column:1/3;font-size:11px;color:var(--muted)}
+.bx.sb{border-color:#6a4bb0}.bx.eb{border-color:#a8742e}.bx.hi{box-shadow:0 0 0 2px var(--gold) inset}
+.opt small svg{display:inline-block;width:14px;height:14px;vertical-align:-2px}
+.chip small{font-size:12px;opacity:.75;margin-left:-2px}
 .pb textarea{width:100%;height:84px;font:12px/1.35 ui-monospace,Menlo,Consolas,monospace;background:var(--bg);color:var(--ink);border:2px solid var(--frame);border-radius:6px;padding:8px;resize:none;user-select:text;-webkit-user-select:text;touch-action:auto;word-break:break-all}
 .go.sub2{background:var(--btn);border-color:var(--btnEdge);font-size:19px;margin-top:8px}
 .hgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:6px}
@@ -426,7 +433,7 @@ button.item{cursor:pointer}
   <div id="lobby">
     <div class="ltop">
       <div class="brand"><h1>던전 탐험</h1><p id="bestTxt"></p><p id="syncTxt" class="sync"></p></div>
-      <div class="wallet"><div class="chip" id="chipG"></div><div class="chip" id="chipJ"></div><button class="chip mus" id="setL">⚙ 설정</button></div>
+      <div class="wallet"><div class="chip" id="chipG"></div><div class="chip" id="chipJ"></div><div class="chip" id="chipSB" title="영혼 상자"></div><div class="chip" id="chipEB" title="장비 상자"></div><button class="chip mus" id="setL">⚙ 설정</button></div>
     </div>
     <div class="lmid">
       <canvas id="heroCv" width="48" height="40"></canvas>
@@ -460,6 +467,8 @@ const T=16;let W=19,H=11,LW=W*T,LH=H*T,DOORX=9,PORT=false;
 const cv=$('cv'),ctx=cv.getContext('2d');
 cv.width=LW;cv.height=LH;ctx.imageSmoothingEnabled=false;
 const COIN='<svg viewBox="0 0 8 8" shape-rendering="crispEdges"><path fill="#f2c14e" d="M2 0h4v1h1v1h1v4H7v1H6v1H2V7H1V6H0V2h1V1h1z"/><path fill="#b8862a" d="M3 2h2v4H3z"/></svg>';
+const SBOX='<svg viewBox="0 0 10 10" shape-rendering="crispEdges"><path fill="#4a2f80" d="M1 4h8v5H1z"/><path fill="#8a64d8" d="M1 2h8v2H1z"/><path fill="#2a1a4a" d="M1 4h8v1H1z"/><path fill="#f2c14e" d="M4 4h2v2H4z"/><path fill="#9ff0ff" d="M4 0h2v2H4z"/></svg>';
+const EBOX='<svg viewBox="0 0 10 10" shape-rendering="crispEdges"><path fill="#7a4a22" d="M1 4h8v5H1z"/><path fill="#c08a4a" d="M1 2h8v2H1z"/><path fill="#4a2a12" d="M1 4h8v1H1z"/><path fill="#e8eef4" d="M4 4h2v2H4z"/><path fill="#e8eef4" d="M7 0h1v3H7z"/><path fill="#8a6a3a" d="M6 2h3v1H6z"/></svg>';
 const GEM='<svg viewBox="0 0 8 8" shape-rendering="crispEdges"><path fill="#4fb8e8" d="M2 1h4v1h1v1h1v1H7v1H6v1H5v1H3V6H2V5H1V4H0V3h1V2h1z"/><path fill="#c9f1ff" d="M2 2h2v1H2z"/></svg>';
 
 /* ---------- 데이터 ---------- */
@@ -800,7 +809,7 @@ function accDesc(id){const it=ITEMS[id],m=rMul(id),out=[];if(id==='c0')return it
   if(it.crit)out.push(`치명타율 +${Math.round(it.crit*m*100)}%`);if(it.goldMul)out.push(`골드 +${Math.round(it.goldMul*m*100)}%`);
   if(it.swim)out.push(`물 위를 걸을 수 있어요 (물에서 속도 ${Math.min(100,60+8*rlvOf(id))}%)`);return out.join(', ');}
 function accOwner(id){for(const k of Object.keys(S.heroes)){const h=S.heroes[k];if(h.c===id||(S.acc2&&h.c2===id))return k;}return null;}
-function rewIcon(r){const ic=r[1]==='g'?COIN:r[1]==='j'?GEM:r[1]==='box'?'<span class="emo">📦</span>':r[1]==='ebox'?'<span class="emo">🎁</span>':`<span class="emo">🧪</span>`;
+function rewIcon(r){const ic=r[1]==='g'?COIN:r[1]==='j'?GEM:r[1]==='box'?SBOX:r[1]==='ebox'?EBOX:`<span class="emo">🧪</span>`;
   return `<span class="ri">${ic}<span>${r[1]==='g'||r[1]==='j'||r[1]==='box'||r[1]==='ebox'?r[0]:POTS[r[1]].sh+r[0]}</span></span>`;}
 const ATT=[[[300,'g'],[1,'box']],[[2,'box']],[[30,'j']],[[2,'ebox']],[[1,'pm'],[1,'box']],[[3,'box']],[[50,'j'],[3,'ebox']]];
 const attCan=()=>!!S.att&&S.att.last!==dayKey();
@@ -1849,7 +1858,7 @@ const claimable=()=>{let n=MISSIONS.filter(m=>m.v(S.st)>=m.goal&&!S.claimed.incl
   for(const k of ['d','w'])n+=perList(k).filter(r=>r.v>=r.m.goal&&!r.got).length;
   const d=perList('d');if(!S.per.d.bonus&&d.length&&d.every(r=>r.got))n++;return n;};
 function renderLobby(){
-  $('chipG').innerHTML=COIN+'<span>'+S.gold+'</span>';$('chipJ').innerHTML=GEM+'<span>'+S.gems+'</span>';
+  $('chipG').innerHTML=COIN+'<span>'+S.gold+'</span>';$('chipJ').innerHTML=GEM+'<span>'+S.gems+'</span>';$('chipSB').innerHTML=SBOX+'<small>영혼</small><span>'+(S.box||0)+'</span>';$('chipEB').innerHTML=EBOX+'<small>장비</small><span>'+(S.ebox||0)+'</span>';
   $('bestTxt').textContent=S.st.best?`최고 ${S.st.best}층`:'첫 탐험을 기다리는 중';
   $('startSub').textContent=`${S.party.map(id=>CLASSES[id].name).join(', ')} / ${MAPS[S.sel.map].name}`;
   {const id=S.party[0],H=S.heroes[id];$('heroName').textContent=`${CLASSES[id].name} Lv${H.lv}, ${SKN(H.skin)}`;}
@@ -1869,7 +1878,7 @@ function drawHero(){
 
 /* ---------- 시트 ---------- */
 const sheet=$('sheet'),shB=$('shB');let sheetKind=null;
-const priceHtml=p=>p[1]==='g'||p[1]==='j'?(p[1]==='g'?COIN:GEM)+p[0]:p[1]==='box'?`📦×${p[0]}`:p[1]==='ebox'?`🎁×${p[0]}`:`🧪${POTS[p[1]].sh}×${p[0]}`;
+const priceHtml=p=>p[1]==='g'||p[1]==='j'?(p[1]==='g'?COIN:GEM)+p[0]:p[1]==='box'?`${SBOX}×${p[0]}`:p[1]==='ebox'?`${EBOX}×${p[0]}`:`🧪${POTS[p[1]].sh}×${p[0]}`;
 let potSel={ps:0,pm:0,pl:0};
 let heroSel=null,heroTab='lv',modeTab='story',lastPull=null,sumTab='hero';
 const starTxt=n=>'★'.repeat(n)+'☆'.repeat(MAXSTAR-n);
@@ -2007,14 +2016,14 @@ const PANELS={
     const res=lastPull&&lastPull.kind===sumTab?`<h3>소환 결과</h3><div class="sgrid">`+lastPull.map(x=>x.acc?`<div class="scard ${x.isNew?'new':''}"><span class="sw" style="background:${ITEMS[x.acc].col};width:22px;height:22px;margin:6px 0"></span>
       <b>${ITEMS[x.acc].name}</b><span class="grade g-${x.g}">${GRADES[x.g].name}</span><small>${x.isNew?'새 장신구!':`장비 조각 ×${x.afrag||1}`}</small></div>`:`<div class="scard ${x.isNew?'new':''}"><canvas ${S.heroes[x.id]?`data-hero="${x.id}"`:`data-hsil="${x.id}"`} width="10" height="12"></canvas>
       <b>${CLASSES[x.id].name}</b><span class="grade g-${x.g}">${GRADES[x.g].name}</span><small>${x.isNew?'새 영웅!':`영혼조각 ×${x.frag}`}</small></div>`).join('')+`</div>`:'';
-    const wl=`<div class="wl"><span>${GEM}${S.gems}</span><span>📦 ${S.box||0}</span><span>🎁 ${S.ebox||0}</span></div>`;
+    const wl=`<div class="boxes"><div class="bx">${GEM}<span>보석</span><b>${S.gems}</b></div><div class="bx sb ${sumTab==='hero'?'hi':''}">${SBOX}<span>영혼 상자</span><b>${S.box||0}</b><small>영웅 소환권</small></div><div class="bx eb ${sumTab==='eq'?'hi':''}">${EBOX}<span>장비 상자</span><b>${S.ebox||0}</b><small>장비 소환권</small></div></div>`;
     if(sumTab==='eq')return wl+tabs+`<p class="hint" style="text-align:left">장신구가 나와요. 이미 가진 장신구가 나오면 그 장신구의 장비 조각으로 바뀌어요. 장비 조각은 영웅 창의 장비 탭에서 재련할 때 써요.</p>
-      <div class="opts"><button class="opt" data-act="pull" data-id="e1">1회 소환<small>${(S.ebox||0)>=1?'장비 상자 1개':'보석 '+EPULL1}</small></button><button class="opt" data-act="pull" data-id="e10">10회 소환<small>${(S.ebox||0)>=10?'장비 상자 10개':'보석 '+EPULL10}</small></button></div>${res}
+      <div class="opts"><button class="opt" data-act="pull" data-id="e1">1회 소환<small>${(S.ebox||0)>=1?EBOX+' 장비 상자 1개':GEM+' '+EPULL1}</small></button><button class="opt" data-act="pull" data-id="e10">10회 소환<small>${(S.ebox||0)>=10?EBOX+' 장비 상자 10개':GEM+' '+EPULL10}</small></button></div>${res}
       <h3>등급별 확률</h3><div class="list">`+['l','e','r','c'].map(g=>{const ks=Object.keys(ACC_G).filter(k=>ACC_G[k]===g);
         return `<div class="item"><span class="grade g-${g}">${GRADES[g].name}</span><span class="tx"><b>${Math.round(GRADES[g].rate*100)}%</b><small>${ks.length?ks.map(k=>ITEMS[k].name).join(', '):'아직 없음 (아래 등급으로 대체)'}, 중복 시 장비 조각 1개</small></span></div>`;}).join('')+`</div>`;
     return wl+tabs+`<p class="hint" style="text-align:left">대부분은 영혼조각이 나와요. 높은 등급 영웅의 조각도 꽤 자주 나오고, 영웅 자체는 낮은 확률로 나와요. 이미 있는 영웅이 나오면 조각 묶음으로 바뀌어요. 없는 영웅의 조각을 ${UNLOCK_FRAG}개 모으면 해방할 수 있어요.</p>
-      <div class="opts"><button class="opt" data-act="pull" data-id="h1">1회 소환<small>${(S.box||0)>=1?'영혼 상자 1개':'보석 '+PULL1}</small></button>
-      <button class="opt" data-act="pull" data-id="h10">10회 소환<small>${(S.box||0)>=10?'영혼 상자 10개':'보석 '+PULL10}</small></button></div>${res}
+      <div class="opts"><button class="opt" data-act="pull" data-id="h1">1회 소환<small>${(S.box||0)>=1?SBOX+' 영혼 상자 1개':GEM+' '+PULL1}</small></button>
+      <button class="opt" data-act="pull" data-id="h10">10회 소환<small>${(S.box||0)>=10?SBOX+' 영혼 상자 10개':GEM+' '+PULL10}</small></button></div>${res}
       <h3>확률표</h3><div class="rtab"><div class="rh"><span>등급</span><span>영웅</span><span>영혼조각</span></div>`+['l','e','r','c'].map(g=>{const hs=HERO_IDS.filter(id=>CLASSES[id].grade===g);
         return `<div class="rr"><span><span class="grade g-${g}">${GRADES[g].name}</span></span><span>${(HERO_RATE[g]*100).toFixed(1)}%<small>중복 시 조각 ${DUP_N[g]}</small></span><span>${Math.round(FRAG_RATE[g]*100)}%<small>${FRAG_N[g]}개씩</small></span></div>
           <div class="rn">${hs.length?hs.map(id=>CLASSES[id].name+(inPool(id)?'':` (스토리 ${STORY_LOCK[id]} 클리어 후)`)).join(', '):'아직 영웅 없음, 아래 등급으로 대체'}</div>`;}).join('')+`</div>`;}],
